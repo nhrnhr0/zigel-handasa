@@ -1,7 +1,9 @@
 <script lang="ts">
 	const PAGE_LABELS = {
 		'waiting-approval': 'פרויקטים ממתינים לאישור',
-		'running-projects': 'פרויקטים רצים'
+		projects: 'פרויקטים',
+		'rejected-project': 'פרויקטים דחויים',
+		accounting: 'כספים'
 	};
 	import { page } from '$app/stores';
 

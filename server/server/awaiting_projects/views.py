@@ -174,7 +174,7 @@ class AwaitingProjectRetriveUpdateView(APIView):
 def awaitingProjectApproveView(request, pk):
     obj = get_object_or_404(AwaitingProject, pk=pk)
     order_number = request.data['order_number']
-    
+    root_price_proposal = obj.root_price_proposal
     project = Project.objects.create(
         name=obj.name,
         client=obj.client,
@@ -182,14 +182,17 @@ def awaitingProjectApproveView(request, pk):
         total=obj.total,
         order_number=order_number,
     )
-    root_price_proposal = obj.root_price_proposal
+    
     project.comments.set(obj.comments.all())
     
     obj.delete()
     root_price_proposal.active = True
-    root_price_proposal.save()
+    
+    
     project.root_price_proposal = root_price_proposal
     project.save()
+    root_price_proposal.project = project
+    root_price_proposal.save()
     return Response(status=status.HTTP_200_OK)
 
 
@@ -214,7 +217,12 @@ def awaitingProjectRejectView(request, pk):
         reason=reason,
     )
     rejected_project.comments.set(obj.comments.all())
-    rejected_project.save()
+    root_price_proposal = obj.root_price_proposal
     obj.delete()
+    root_price_proposal.active = False
+    root_price_proposal.save()
+    rejected_project.root_price_proposal = root_price_proposal
+    rejected_project.save()
+    
     return Response(status=status.HTTP_200_OK)
 

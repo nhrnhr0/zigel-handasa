@@ -1,6 +1,24 @@
 <script>
 	import { page } from '$app/stores';
-	export let data;
+	// export let data;
+	let info = [
+		{
+			name: 'ממתינים לאישור',
+			url: '/waiting-approval'
+		},
+		{
+			name: 'פרויקטים',
+			url: '/projects'
+		},
+		{
+			name: 'פרויקטים דחויים',
+			url: '/rejected-project'
+		},
+		{
+			name: 'כספים',
+			url: '/accounting'
+		}
+	];
 </script>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -19,7 +37,7 @@
 		</button>
 		<div class="collapse navbar-collapse" id="navbarNav">
 			<ul class="navbar-nav">
-				{#each data as item}
+				{#each info as item}
 					<li class="nav-item" class:active={$page.url.pathname.includes(item.url)}>
 						<a class="nav-link" href={item.url}>{item.name}</a>
 					</li>

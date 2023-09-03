@@ -18,6 +18,7 @@ from core.filters import CreatedAtBetweenDateFilterBackend, UpdatedAtBetweenDate
 from client.models import Client
 from core.pagination import StandardResultsSetPagination
 from core.filters import ClientMultiSelectFilter, TypeMultiSlectFilter
+from project.models import Project
 class AccountingDocListView(generics.ListAPIView):
     queryset = AccountingDoc.objects.select_related('client').all()
     serializer_class = AccountingDocSerializer
@@ -35,10 +36,13 @@ def accountingDocsAPIDescription(request):
         print(i)
     type_options = [{'value':i[0],'label':i[1]} for i in FINANCIAL_DOC_TYPES]
 
+    project_options = [{'value':i.id,'label':i.name} for i in Project.objects.all()]
+
     ret = {
         'extra':{
             'client_options':client_options,
             'type_options':type_options,
+            'project_options':project_options,
         },
         'filters':{
             'client':{
@@ -52,6 +56,12 @@ def accountingDocsAPIDescription(request):
                 'options': 'type_options',
                 'name': 'סוג',
                 'slug': 'type',
+            },
+            'project': {
+                'type':'multi-select',
+                'options': 'project_options',
+                'name': 'פרויקט',
+                'slug': 'project',
             },
             'created_at':{
                 'type':'date',
@@ -67,6 +77,11 @@ def accountingDocsAPIDescription(request):
             },
             'type__name': {
                 'lable': 'סוג',
+                'sortable': True,
+                'type': 'text',
+            },
+            'project__names': {
+                'lable': 'פרויקט',
                 'sortable': True,
                 'type': 'text',
             },

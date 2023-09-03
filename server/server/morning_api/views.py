@@ -33,16 +33,25 @@ def morningWebhookDocumentView(request):
             client,client_created = Client.objects.get_or_create(morning_id=client_morning_id)
         if client:
             # we need to get or create the price proposal
-            price_proposal, pp_created = AccountingDocPriceProposal.objects.get_or_create(morning_id=request.data['id'],defaults={'client':client,'active':False,'doc_number':request.data['number'],'base_price_proposal':None,'type':request.data['type'],'total':request.data['total'],'api_data':request.data})
+            price_proposal, price_proposal_created = AccountingDocPriceProposal.objects.get_or_create(morning_id=request.data['id'],
+                                                                                                      defaults={
+                                                                                                          'client':client,
+                                                                                                          'active':False,
+                                                                                                          'doc_number':request.data['number'],
+                                                                                                          'type':request.data['type'],
+                                                                                                          'total':request.data['total'],
+                                                                                                          'api_data':request.data})
             
-            if pp_created:
+            if price_proposal_created:
                 # we need to create the awaiting project, set the alert date 7 days from now
                 alert = request.data['date']
                 alert_date = datetime.strptime(alert, '%Y-%m-%d')
                 alert_date = alert_date.date() + timedelta(days=7)
                 
                 awaiting_project = AwaitingProject.objects.create(name=request.data['description'],root_price_proposal=price_proposal,alert_date=alert_date, client=client, total=request.data['total'])
+                price_proposal.root_price_proposals.add(price_proposal) # add self to root price proposals so serializer will work doc.root_price_proposals.all()__root_project__name
 
+                price_proposal.save()
 
     
     return HttpResponse('ok', status=200)
