@@ -1,0 +1,328 @@
+<script>
+	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
+	import RawCell from '../cells/RawCell.svelte';
+	import PaginationResult from '../compontnts/PaginationResult.svelte';
+	import { SEARCH_QUERY_PARAM, ORDERING_QUERY_PARAM } from '$lib/consts.js';
+	import HebrewDateCell from '../cells/HebrewDateCell.svelte';
+	import TestCustomCell from '../cells/custom/TestCustomCell.svelte';
+	import AwaitingProjectsActionCell from '../cells/custom/AwaitingProjectsActionCell.svelte';
+	import ProjectsActionCell from '../cells/custom/ProjectsActionCell.svelte';
+	export let description;
+	export let api_data;
+	let search_term = '';
+
+	let table_height_px = `calc(100vh - 300px)`;
+
+	onMount(() => {
+		// check if search term is in the url
+		const url_params = new URLSearchParams(window.location.search);
+		search_term = url_params.get(SEARCH_QUERY_PARAM) || '';
+
+		// check if there is a sort param in the url (ordering)
+		// http://127.0.0.1:8000/awaiting-projects/?client__in=1%2C2&ordering=client__name,-name
+		const ordering = url_params.get(ORDERING_QUERY_PARAM) || '';
+		console.log('ordering', ordering);
+		// add to each field if it is sorted and how
+		// description['api-description'].fields[field_key].sorted = 'asc' | 'desc' | undefined
+		for (const [key, value] of Object.entries(description['api-description'].fields)) {
+			value.sorted = undefined;
+		}
+		// split by comma
+		const ordering_fields = ordering.split(',');
+		// remove empty strings
+
+		// iterate over each field
+		let i = 0;
+		let field_key = '';
+		for (const field of ordering_fields) {
+			// if field starts with - it is sorted desc
+			if (field === '') continue;
+			if (field.startsWith('-')) {
+				// remove the -
+				field_key = field.slice(1);
+				// add sorted desc to the field
+				description['api-description'].fields[field_key].sorted = 'desc';
+			} else {
+				// add sorted asc to the field
+				field_key = field;
+				description['api-description'].fields[field_key].sorted = 'asc';
+			}
+			description['api-description'].fields[field_key].sort_order = i;
+			i++;
+		}
+	});
+	function search_on_enter(e) {
+		if (e.key === 'Enter') {
+			preform_search();
+		}
+	}
+	function preform_search() {
+		console.log('searching for', search_term);
+		// remove the search term from the url
+		let url = window.location.href;
+		let split_url = url.split('?');
+		let base_url = split_url[0];
+		let query_params = split_url[1];
+		let url_params = new URLSearchParams(query_params);
+		url_params.set(SEARCH_QUERY_PARAM, search_term);
+		url = `${base_url}?${url_params.toString()}`;
+		location = url;
+	}
+
+	function preform_sort(field, current_field_key) {
+		console.log('preform_sort', field, current_field_key);
+		debugger;
+		if (field.sortable === true) {
+			const url_params = new URLSearchParams(window.location.search);
+			const ordering = url_params.get(ORDERING_QUERY_PARAM) || '';
+			const ordering_fields = ordering.split(',');
+			let new_ordering = '';
+			let field_key = '';
+			let found = false;
+			for (const field of ordering_fields) {
+				if (field === '') continue;
+				if (field.startsWith('-')) {
+					field_key = field.slice(1);
+				} else {
+					field_key = field;
+				}
+				if (field_key === current_field_key) {
+					found = true;
+					if (field.startsWith('-')) {
+						new_ordering += field_key;
+					} else {
+						new_ordering += '-' + field_key;
+					}
+				} else {
+					new_ordering += field;
+				}
+				new_ordering += ',';
+			}
+			if (!found) {
+				if (field.sorted === 'asc') {
+					new_ordering += '-' + current_field_key + ',';
+				} else {
+					new_ordering += current_field_key + ',';
+				}
+			}
+			// remove last comma
+			new_ordering = new_ordering.slice(0, -1);
+			// set the ordering to the url_params
+			url_params.set(ORDERING_QUERY_PARAM, new_ordering);
+
+			location.href = `${$page.url.pathname}?${url_params.toString()}`;
+		}
+	}
+
+	function remove_from_sort(field, current_field_key) {
+		const url_params = new URLSearchParams(window.location.search);
+		const ordering = url_params.get(ORDERING_QUERY_PARAM) || '';
+		const ordering_fields = ordering.split(',');
+		let new_ordering = '';
+		let field_key = '';
+		let found = false;
+		for (const field of ordering_fields) {
+			if (field === '') continue;
+			if (field.startsWith('-')) {
+				field_key = field.slice(1);
+			} else {
+				field_key = field;
+			}
+			if (field_key === current_field_key) {
+				found = true;
+			} else {
+				new_ordering += field;
+			}
+			new_ordering += ',';
+		}
+		// remove comma at the end
+		if (new_ordering.endsWith(',')) {
+			new_ordering = new_ordering.slice(0, -1);
+		}
+		url_params.set(ORDERING_QUERY_PARAM, new_ordering);
+		location.href = `${$page.url.pathname}?${url_params.toString()}`;
+	}
+
+	export let custom_cell_components = {
+		'test-component': TestCustomCell,
+		'awaiting-projects-action-cell': AwaitingProjectsActionCell,
+		'projects-action-cell': ProjectsActionCell
+	};
+</script>
+
+<div class="col-9 main-area">
+	<!-- pagination results -->
+	<PaginationResult {api_data} />
+	<!-- search box -->
+	<div class="d-flex justify-content-center px-5">
+		<div class="search">
+			<input
+				type="text"
+				class="search-input"
+				placeholder="חיפוש..."
+				name=""
+				bind:value={search_term}
+				on:keypress={search_on_enter}
+			/>
+			<button class="search-icon" on:click={preform_search}> <i class="fa fa-search" /> </button>
+		</div>
+	</div>
+
+	{#if description && api_data}
+		<div class="scroll-table" style="--table-height: {table_height_px}">
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th>#</th>
+						{#each Object.keys(description['api-description'].fields) as field_key, i}
+							{@const field = description['api-description'].fields[field_key]}
+							<th>
+								<button class="btn transparent-btn" on:click={() => preform_sort(field, field_key)}>
+									{field.lable}
+
+									{#if field.sortable}
+										{#if field.sorted === 'asc'}
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												width="16"
+												height="16"
+												fill="currentColor"
+												class="bi bi-caret-up-fill"
+												viewBox="0 0 16 16"
+											>
+												<path d="M8 4.879 3.5 9h9L8 4.879z" />
+											</svg>
+										{:else if field.sorted === 'desc'}
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												width="16"
+												height="16"
+												fill="currentColor"
+												class="bi bi-caret-down-fill"
+												viewBox="0 0 16 16"
+											>
+												<path d="M8 11.121 12.5 7H3.5L8 11.121z" />
+											</svg>
+										{/if}
+										{#if field?.sort_order != undefined}
+											<small class="text-muted" title="מיקום במיון">{field.sort_order + 1}</small>
+										{/if}
+									{/if}
+								</button>
+								{#if field.sortable && field.sorted}
+									<button
+										class="btn btn-secondary btn-sm"
+										on:click={() => remove_from_sort(field, field_key)}
+									>
+										הסר מיון
+									</button>
+								{/if}
+							</th>
+						{/each}
+					</tr>
+				</thead>
+				<tbody>
+					{#each api_data.results as row, i}
+						<tr>
+							<td>{i + 1}</td>
+							{#each Object.keys(description['api-description'].fields) as field_key}
+								<td>
+									{#if description['api-description'].fields[field_key].type === 'date'}
+										<HebrewDateCell data={row[field_key]} />
+									{:else if description['api-description'].fields[field_key].type === 'custom'}
+										<svelte:component
+											this={custom_cell_components[
+												description['api-description'].fields[field_key].custom_component
+											]}
+											data={{
+												row: row,
+												field_key: field_key,
+												description: description,
+												api_data: api_data
+											}}
+										/>
+									{:else}
+										<RawCell data={row[field_key]} />
+									{/if}
+								</td>
+							{/each}
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
+	{:else}
+		<div class="spinner-border" role="status">
+			<span class="sr-only" />
+		</div>
+	{/if}
+</div>
+
+<style lang="scss">
+	.scroll-table {
+		overflow-y: scroll;
+		height: var(--table-height);
+	}
+	.main-area {
+		background-color: #f5f5f5;
+		padding: 1rem;
+	}
+
+	.search {
+		width: 100%;
+		margin-bottom: auto;
+		margin-top: 20px;
+		height: 50px;
+		background-color: #fff;
+		padding: 10px;
+		border-radius: 5px;
+		margin-bottom: 20px;
+	}
+	.search-input {
+		color: white;
+		border: 0;
+		outline: 0;
+		background: none;
+		width: 0;
+		margin-top: 5px;
+		caret-color: transparent;
+		// line-height: 20px;
+		transition: width 0.4s linear;
+		padding: 0 10px;
+		width: 100%;
+		caret-color: #536bf6;
+		// font-size: 19px;
+		font-weight: 300;
+		color: black;
+		transition: width 0.4s linear;
+	}
+
+	.search-icon {
+		border: none;
+		height: 34px;
+		width: 34px;
+		float: left;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		color: white;
+		background-color: #536bf6;
+		font-size: 10px;
+		bottom: 30px;
+		position: relative;
+		border-radius: 5px;
+	}
+
+	.search-icon:hover {
+		background-color: #6c80f4;
+	}
+
+	.search-icon:hover {
+		color: #fff !important;
+	}
+
+	a:link {
+		text-decoration: none;
+	}
+</style>

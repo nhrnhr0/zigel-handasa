@@ -1,0 +1,25 @@
+
+
+export const BASE_SERVER_URL = 'http://127.0.0.1:8000';
+
+
+export const API_NAVBAR = BASE_SERVER_URL + '/navbar';
+
+
+export const API_AWAITING_PROJECTS = BASE_SERVER_URL + '/awaiting-projects/';
+export const API_AWAITING_PROJECTS_DESCRIPTION = BASE_SERVER_URL + '/awaiting-projects-description/';
+
+export const API_PROJECTS = BASE_SERVER_URL + '/projects/';
+export const API_PROJECTS_DESCRIPTION = BASE_SERVER_URL + '/projects-description/';
+
+export const API_REJECTED_PROJECT = BASE_SERVER_URL + '/rejected-projects/';
+export const API_REJECTED_PROJECT_DESCRIPTION = BASE_SERVER_URL + '/rejected-projects-description/';
+
+export const API_ACCOUNTING_DOCS = BASE_SERVER_URL + '/accounting-docs/';
+export const API_ACCOUNTING_DOCS_DESCRIPTION = BASE_SERVER_URL + '/accounting-docs-description/';
+
+
+export const SEARCH_QUERY_PARAM = 'search';
+export const ORDERING_QUERY_PARAM = 'ordering';
+export const PAGINATION_QUERY_PARAM = 'page';
+export const PAGE_SIZE_QUERY_PARAM = 'page_size';
