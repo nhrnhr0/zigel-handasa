@@ -5,9 +5,13 @@
 
 	export let description_url;
 	export let api_url;
+	export let allow_select = false;
+	export let actions;
 
-	let description_data = undefined;
-	let api_data = undefined;
+	export let description_data = undefined;
+	export let api_data = undefined;
+
+	export let on_select_change = undefined;
 
 	const fetchDescription = async () => {
 		const res = await fetch(description_url);
@@ -34,7 +38,13 @@
 	<div class="row">
 		{#if description_data && api_data}
 			<TableFilterPanel description={description_data} {api_data} />
-			<TableDataPanel description={description_data} {api_data} />
+			<TableDataPanel
+				description={description_data}
+				{api_data}
+				{allow_select}
+				{on_select_change}
+				bind:actions
+			/>
 		{/if}
 	</div>
 </div>

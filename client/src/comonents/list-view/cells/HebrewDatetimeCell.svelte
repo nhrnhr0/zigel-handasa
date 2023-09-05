@@ -4,7 +4,6 @@
 
 {#if data}
 	{new Date(data).toLocaleString('he-IL', {
-		timeZone: 'Asia/Jerusalem',
-		dateStyle: 'short'
+		timeZone: 'Asia/Jerusalem'
 	})}
 {/if}

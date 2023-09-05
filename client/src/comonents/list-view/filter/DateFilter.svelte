@@ -18,9 +18,13 @@
 			// }
 			if (value['from']) {
 				ret.push({ name: `${slug}__gte`, value: value['from'] });
+			} else {
+				ret.push({ name: `${slug}__gte`, value: '' });
 			}
 			if (value['to']) {
 				ret.push({ name: `${slug}__lte`, value: value['to'] });
+			} else {
+				ret.push({ name: `${slug}__lte`, value: '' });
 			}
 		}
 		return ret;

@@ -20,7 +20,7 @@ from core.pagination import StandardResultsSetPagination
 from core.filters import ClientMultiSelectFilter, TypeMultiSlectFilter
 from project.models import Project
 class AccountingDocListView(generics.ListAPIView):
-    queryset = AccountingDoc.objects.select_related('client').all()
+    queryset = AccountingDoc.objects.select_related('client').filter(active=True)
     serializer_class = AccountingDocSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend,filters.SearchFilter,filters.OrderingFilter,CreatedAtBetweenDateFilterBackend,UpdatedAtBetweenDateFilterBackend,CreatedAtBetweenDateFilterBackend,ClientMultiSelectFilter,TypeMultiSlectFilter]

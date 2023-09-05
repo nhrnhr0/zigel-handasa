@@ -5,12 +5,83 @@
 	import PaginationResult from '../compontnts/PaginationResult.svelte';
 	import { SEARCH_QUERY_PARAM, ORDERING_QUERY_PARAM } from '$lib/consts.js';
 	import HebrewDateCell from '../cells/HebrewDateCell.svelte';
+	import HebrewDateTimeCell from '../cells/HebrewDatetimeCell.svelte';
 	import TestCustomCell from '../cells/custom/TestCustomCell.svelte';
 	import AwaitingProjectsActionCell from '../cells/custom/AwaitingProjectsActionCell.svelte';
 	import ProjectsActionCell from '../cells/custom/ProjectsActionCell.svelte';
+	import BulkActions from '../compontnts/BulkActions.svelte';
 	export let description;
 	export let api_data;
+	export let allow_select;
 	let search_term = '';
+	export let selected_ids = {};
+	export let select_all = false;
+	export let actions;
+	export let selected_data;
+
+	export let on_select_change = undefined;
+
+	function select_all_rows(e) {
+		if (e.target.checked) {
+			// selected_rows = api_data.results;
+			let list = api_data.results.map((r) => r.id);
+			selected_ids = {};
+			for (const id of list) {
+				selected_ids[id] = true;
+			}
+		} else {
+			selected_ids = {};
+		}
+		debugger;
+		select_all = e.target.checked;
+		update_selected_data();
+		if (on_select_change) {
+			on_select_change(selected_ids, selected_data);
+		}
+	}
+
+	function check_if_all_selected() {
+		let all_selected_ids_are_true = true;
+		for (const [key, value] of Object.entries(selected_ids)) {
+			if (value === false) {
+				all_selected_ids_are_true = false;
+			}
+		}
+		select_all =
+			api_data.results.length === Object.values(selected_ids).length && all_selected_ids_are_true;
+	}
+
+	function update_selected_data() {
+		debugger;
+		let selected_ids_array = Object.entries(selected_ids)
+			.filter((e) => e[1] === true)
+			.map((e) => e[0]);
+		selected_data = api_data.results.filter((row) =>
+			selected_ids_array.includes(row.id.toString())
+		);
+	}
+	function select_row(e) {
+		if (selected_ids[e.id]) {
+			delete selected_ids[e.id];
+		} else {
+			selected_ids[e.id] = true;
+		}
+		check_if_all_selected();
+		update_selected_data();
+		debugger;
+
+		if (on_select_change) {
+			on_select_change(selected_ids, selected_data);
+		}
+	}
+	function clear_select() {
+		selected_ids = {};
+		select_all = false;
+		update_selected_data();
+		if (on_select_change) {
+			on_select_change(selected_ids, selected_data);
+		}
+	}
 
 	let table_height_px = `calc(100vh - 300px)`;
 
@@ -175,6 +246,18 @@
 				<thead>
 					<tr>
 						<th>#</th>
+						{#if allow_select}
+							<th>
+								<input
+									class="form-check-input"
+									type="checkbox"
+									value=""
+									id="flexCheckDefault"
+									on:change={select_all_rows}
+									bind:checked={select_all}
+								/>
+							</th>
+						{/if}
 						{#each Object.keys(description['api-description'].fields) as field_key, i}
 							{@const field = description['api-description'].fields[field_key]}
 							<th>
@@ -226,9 +309,23 @@
 					{#each api_data.results as row, i}
 						<tr>
 							<td>{i + 1}</td>
+							{#if allow_select}
+								<td>
+									<input
+										class="form-check-input"
+										type="checkbox"
+										value=""
+										id="flexCheckDefault"
+										on:change={() => select_row(row)}
+										bind:checked={selected_ids[row.id]}
+									/>
+								</td>
+							{/if}
 							{#each Object.keys(description['api-description'].fields) as field_key}
 								<td>
-									{#if description['api-description'].fields[field_key].type === 'date'}
+									{#if description['api-description'].fields[field_key].type === 'datetime'}
+										<HebrewDateTimeCell data={row[field_key]} />
+									{:else if description['api-description'].fields[field_key].type === 'date'}
 										<HebrewDateCell data={row[field_key]} />
 									{:else if description['api-description'].fields[field_key].type === 'custom'}
 										<svelte:component
@@ -258,6 +355,8 @@
 		</div>
 	{/if}
 </div>
+
+<BulkActions bind:actions {selected_data} {clear_select} />
 
 <style lang="scss">
 	.scroll-table {

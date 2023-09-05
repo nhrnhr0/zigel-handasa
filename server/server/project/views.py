@@ -28,7 +28,7 @@ class ProjectListView(generics.ListAPIView):
     serializer_class = ProjectSerializer
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend,filters.SearchFilter,filters.OrderingFilter,ClientMultiSelectFilter, StatusMultiSelectFilter]
     filterset_fields = ['name','client','created_at','updated_at',]
-    search_fields = ['name','client__name','total','last_comment',]
+    search_fields = ['name','client__name','total',]
     pagination_class = StandardResultsSetPagination
     # permission_classes = (permissions.IsAuthenticated,)
 from rest_framework.decorators import api_view

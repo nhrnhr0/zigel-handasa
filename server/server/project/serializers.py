@@ -5,6 +5,9 @@ from rest_framework import serializers
 class ProjectSerializer(ModelSerializer):
     client__name = serializers.CharField(source='client.name', read_only=True)
     status__name = serializers.CharField(source='status.name', read_only=True)
+    last_comment = serializers.SerializerMethodField()
+    def get_last_comment(self, obj):
+        return obj.get_last_comment_text()
     class Meta:
         model = Project
         fields = ('id', 'name','client__name','last_comment','created_at','updated_at','total','status__name','order_number')
@@ -21,4 +24,4 @@ class ProjectDetailSerializer(ModelSerializer):
         return [{'value':status.id,'label':status.name} for status in ProjectStatus.objects.all()]
     class Meta:
         model = Project
-        fields = ('id', 'name','client','last_comment','created_at','updated_at','total','status','order_number','client_options','status_options',)
+        fields = ('id', 'name','client','created_at','updated_at','total','status','order_number','client_options','status_options',)

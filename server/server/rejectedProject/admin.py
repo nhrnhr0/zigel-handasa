@@ -10,6 +10,6 @@ class RejectedReasonAdmin(admin.ModelAdmin):
     pass
 admin.site.register(RejectedReason, RejectedReasonAdmin)
 class RejectedProjectAdmin(admin.ModelAdmin):
-    list_display = ('name', 'reason', 'last_comment', 'created_at', 'updated_at',)
+    list_display = ('name', 'reason', 'created_at', 'updated_at',)
     pass
 admin.site.register(RejectedProject, RejectedProjectAdmin)

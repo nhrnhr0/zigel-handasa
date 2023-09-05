@@ -14,15 +14,20 @@ from core.filters import BaseDateFilter
 from django_filters import rest_framework
 from rest_framework.decorators import api_view
 from core.pagination import StandardResultsSetPagination
-from core.filters import MultiSelectFilter, CreatedAtBetweenDateFilterBackend, UpdatedAtBetweenDateFilterBackend
-class AwaitingProjectsClientFilter(MultiSelectFilter):
-    base_filter_queryparam = 'client__in'
+from core.filters import MultiSelectFilter, CreatedAtBetweenDateFilterBackend, UpdatedAtBetweenDateFilterBackend,multiSelectFilterFactory
+
 class AwaitingProjectsListView(generics.ListAPIView):
-    queryset = AwaitingProject.objects.select_related('client').all()
+    queryset = AwaitingProject.objects.select_related('client', 'root_price_proposal').all()
     serializer_class = AwaitingProjectSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    filter_backends = [django_filters.rest_framework.DjangoFilterBackend,filters.SearchFilter,filters.OrderingFilter,CreatedAtBetweenDateFilterBackend,UpdatedAtBetweenDateFilterBackend,]
-    filterset_fields = ['name','created_at','updated_at',]
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend,filters.SearchFilter,filters.OrderingFilter,multiSelectFilterFactory('root_price_proposal__client__in'),]
+    # filterset_fields = ['name','created_at','updated_at',{'alert_date':['lte','gte']},]
+    filterset_fields = {
+        'name': ['icontains'],
+        'created_at': ['lte','gte'],
+        'updated_at': ['lte','gte'],
+        'alert_date': ['lte','gte'],
+    }
     search_fields = ['name','client__name','total','last_comment',]
     pagination_class = StandardResultsSetPagination
 
@@ -30,21 +35,6 @@ from client.models import Client
 
 @api_view(['GET'])
 def awaitingProjectsAPIDescription(request):
-    pass
-    # filters:
-    # name (text), client (select), created_at (date), updated_at (date)
-    # search:
-    # name (text), client (select)
-    # ordering:
-    # name (text), client (select), created_at (date), updated_at (date)
-    # pagination:
-    # None
-    # fields:
-    # name (text), client (select), created_at (date), updated_at (date)
-    # actions:
-    # None
-    # permissions:
-    # None
     clients = Client.objects.all()
     client_options = [{'value':client.id,'label':client.name} for client in clients]
     
@@ -56,13 +46,18 @@ def awaitingProjectsAPIDescription(request):
             'name':{
                 'type':'text',
                 'name': 'שם',
-                'slug': 'name',
+                'slug': 'name__icontains',
             },
             'client':{
                 'type':'multi-select',
                 'options':'client_options',
                 'name': 'לקוח',
                 'slug': 'root_price_proposal__client',
+            },
+            'alrt_date':{
+                'type':'date',
+                'name': 'תאריך התראה',
+                'slug': 'alert_date',
             },
             'created_at':{
                 'type':'date',
@@ -92,27 +87,31 @@ def awaitingProjectsAPIDescription(request):
                 'sortable': True,
                 'type': 'text',
             },
-            # 'test': {
-            #     'lable': 'test',
-            #     'sortable': False,
-            #     'type': 'custom',
-            #     'custom_component': 'test-component',
-            # },
             'awaiting-projects-action-cell': {
                 'lable': 'פעולות',
                 'sortable': False,
                 'type': 'custom',
                 'custom_component': 'awaiting-projects-action-cell',
             },
-            'created_at': {
-                'lable': 'נוצר בתאריך',
+            # 'created_at': {
+            #     'lable': 'נוצר בתאריך',
+            #     'sortable': True,
+            #     'type': 'date',
+            # },
+            # 'updated_at': {
+            #     'lable': 'עודכן בתאריך',
+            #     'sortable': True,
+            #     'type': 'date',
+            # },
+            'alert_date': {
+                'lable': 'תאריך התראה',
                 'sortable': True,
                 'type': 'date',
             },
-            'updated_at': {
-                'lable': 'עודכן בתאריך',
+            'last_comment_text': {
+                'lable': 'הערה אחרונה',
                 'sortable': True,
-                'type': 'date',
+                'type': 'text',
             },
         },
         'actions':{
@@ -160,10 +159,12 @@ class AwaitingProjectRetriveUpdateView(APIView):
         serializer = self.class_serializer(obj, data=request.data)
         if serializer.is_valid():
             saved_obj = serializer.save()
-            saved_obj.client_id = request.data['client']
-            saved_obj.root_price_proposal.client_id = request.data['client']
-            saved_obj.root_price_proposal.total = request.data['total']
+            saved_obj.client_id = request.data['client']['value']
+            saved_obj.root_price_proposal.client_id = request.data['client']['value']
+            saved_obj.root_price_proposal.total = request.data['api_data']['total']
+            saved_obj.root_price_proposal.api_data = request.data['api_data']
             saved_obj.root_price_proposal.save()
+            saved_obj.comments = request.data['comments']
             saved_obj.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         print(serializer.errors)
