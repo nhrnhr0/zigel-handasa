@@ -125,8 +125,8 @@ class MorningAPI(metaclass=SingletonMeta):
         #}
         url = f'{self.BASE_MORNING_URL}/account/token'
         data = {
-            "id": "64e0b4c3-e49c-454d-beb3-060c42c070f8",
-            "secret": "Tnyu1eqYWB0xEi1oGK29PA"
+            "id": os.environ["MORNING_API_SECRET"],
+            "secret": os.environ["MORNING_API_ID"]
         }
         # response = self.make_request(url, method='POST', data=data, include_auth=False)
         response = requests.post(url, data=data)
