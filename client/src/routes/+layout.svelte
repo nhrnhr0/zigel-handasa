@@ -9,7 +9,7 @@
 	// $page.data.nav_data
 </script>
 
-<Navbar data={$page.data.nav_data} />
+<Navbar />
 <Breadcrumb />
 
 <Modals>
