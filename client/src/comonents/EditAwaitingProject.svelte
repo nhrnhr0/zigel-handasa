@@ -2,7 +2,9 @@
 	import Tabs from './shered/Tabs.svelte';
 	import PricePropInfo from './shered/Cards/PricePropInfo.svelte';
 	import CommentsCard from './shered/Cards/CommentsCard.svelte';
-	import { MultiSelect } from 'svelte-multiselect';
+	import ModalApprove from '../modals/awaiting-approval/ModalApprove.svelte';
+	import ModalReject from '../modals/awaiting-approval/ModalReject.svelte';
+	import { openModal } from 'svelte-modals';
 	export let form_data;
 	export let on_update_function;
 	let activeTabId;
@@ -15,16 +17,24 @@
 			updateing = false;
 		});
 	}
+
+	function handleApproveClick() {
+		openModal(ModalApprove, { awaiting_project_id: form_data.id });
+	}
+
+	function handleRejectClick() {
+		openModal(ModalReject, { awaiting_project_id: form_data.id });
+	}
 </script>
 
 <div class="container">
-	<h1 id="FirstHeader">פרויקט {form_data.api_data['number']}</h1>
+	<h1 id="FirstHeader">הצעת מחיר {form_data.api_data['number']}</h1>
 	<form class="price-proposal-form">
 		<Tabs
 			bind:activeTabId
 			items={[
 				{ id: 1, label: 'פרטי המסמך', selected: true },
-				{ id: 2, label: 'הערות + סטטוס', selected: false },
+				{ id: 2, label: 'הערות + תאריך התראה', selected: false },
 				{ id: 3, label: 'קבצים', selected: false }
 			]}
 		/>
@@ -37,27 +47,33 @@
 					<h4 class="form-title" id="userInfoHeader">הערות + תאריך התראה</h4>
 					<div class="row">
 						<div class="col">
-							<div class="form-group">
-								<label for="status">סטטוס</label>
-								<MultiSelect
-									outerDivClass="status-select"
-									options={form_data.status_options}
-									maxSelect={1}
-									bind:selected={form_data.status}
-									allowUserOptions={true}
-									createOptionMsg={'הוסף סטטוס חדש'}
-								/>
-							</div>
+							<label for="alert_date">תאריך התראה</label>
+							<input
+								class="form-control"
+								type="datetime-local"
+								id="alert_date"
+								name="alert_date"
+								placeholder="בחרו תאריך"
+								bind:value={form_data.alert_date}
+							/>
+							<small>
+								צריך ליצור קשר עם הלקוח בעוד: {Math.floor(
+									(new Date(form_data.alert_date).setHours(0, 0, 0, 0) -
+										new Date().setHours(0, 0, 0, 0)) /
+										(1000 * 60 * 60 * 24)
+								)} ימים
+							</small>
 						</div>
-						<div class="col">
-							<div class="form-group">
-								<label for="order_number">מספר הזמנה במערכת הלקוח</label>
-								<input
-									type="text"
-									class="form-control"
-									id="order_number"
-									bind:value={form_data.order_number}
-								/>
+					</div>
+					<div class="row">
+						<div class="page-actions">
+							<div class="buttons-wraper">
+								<button type="button" class="btn btn-success" on:click={handleApproveClick}>
+									סמן כאושר
+								</button>
+								<button type="button" class="btn btn-danger" on:click={handleRejectClick}>
+									סמן כנדחה
+								</button>
 							</div>
 						</div>
 					</div>
@@ -101,10 +117,6 @@
 </div>
 
 <style lang="scss">
-	:global(.status-select) {
-		padding: 0px !important;
-		height: 38px !important;
-	}
 	.price-proposal-form {
 		.card {
 			margin-bottom: 25px;

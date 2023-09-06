@@ -48,7 +48,7 @@ def morningWebhookDocumentView(request):
                 alert_date = datetime.strptime(alert, '%Y-%m-%d')
                 alert_date = alert_date.date() + timedelta(days=7)
                 
-                awaiting_project = AwaitingProject.objects.create(name=request.data['description'],root_price_proposal=price_proposal,alert_date=alert_date, client=client, total=request.data['total'])
+                awaiting_project = AwaitingProject.objects.create(name=request.data['description'],root_price_proposal=price_proposal,alert_date=alert_date)
                 price_proposal.root_price_proposals.add(price_proposal) # add self to root price proposals so serializer will work doc.root_price_proposals.all()__root_project__name
 
                 price_proposal.save()

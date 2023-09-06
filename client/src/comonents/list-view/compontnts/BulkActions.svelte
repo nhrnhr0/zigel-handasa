@@ -3,18 +3,29 @@
 	export let actions = [];
 	export let selected_data = [];
 	export let clear_select;
+	export let selected_action = undefined;
 </script>
 
 {#if actions && actions.length > 0}
 	<div class="bulk-actions" transition:fly={{ y: 100, duration: 200 }}>
 		<label for="bulk-actions">בחר פעולה ({selected_data.length} פריטים)</label>
 		<div class="form-group">
-			<select class="form-control" style="width: 200px; margin-right: 20px;">
+			<select
+				class="form-control"
+				style="width: 200px; margin-right: 20px;"
+				bind:value={selected_action}
+			>
 				{#each actions as action}
 					<option value={action.label}>{action.label}</option>
 				{/each}
 			</select>
-			<button class="btn btn-primary">בצע</button>
+			<button
+				class="btn btn-primary"
+				on:click={() => {
+					actions.filter((v) => v.label == selected_action)[0].action(selected_data);
+					clear_select();
+				}}>בצע</button
+			>
 		</div>
 
 		<div class="exit">

@@ -1,14 +1,23 @@
 <script>
 	import TableViewPage from '../../comonents/list-view/TableViewPage.svelte';
 	import { API_ACCOUNTING_DOCS, API_ACCOUNTING_DOCS_DESCRIPTION } from '$lib/consts';
-	import BulkActions from '../../comonents/list-view/compontnts/BulkActions.svelte';
-	let selected_ids = [];
-	let selected_data = [];
+	import { goto } from '$app/navigation';
 	let api_data = undefined;
+
+	function create_invoice(docs) {
+		// goto new invoice page with docs ids in query params linkedDocumentIds=['morning_id1',...]
+		let url = '/accounting/new/invoice/?linkedDocumentIds=';
+		debugger;
+		for (const doc of docs) {
+			url += doc.morning_id + ',';
+		}
+		url = url.slice(0, -1);
+		console.log('url: ', url);
+		goto(url);
+	}
 
 	let actions = [];
 	function on_select_change(selected_ids_dict, selected_data) {
-		debugger;
 		if (selected_data.length == 0) {
 			actions = [];
 			return;
@@ -32,7 +41,6 @@
 		let only_receipts_selected = true;
 		let only_one_client_selected = true;
 		let selected_client = undefined;
-		debugger;
 		for (const row of selected_data) {
 			if (row.type != 'הצעת מחיר') {
 				only_price_proposals_selected = false;
@@ -51,36 +59,35 @@
 				}
 			}
 		}
-		debugger;
 		if (only_price_proposals_selected && only_one_client_selected) {
 			actions.push({
-				label: 'צור חשבונית',
+				label: 'צור חשבונית על סמך הצעות מחיר',
 				action: () => {
-					console.log('create invoice');
+					create_invoice(selected_data);
 				}
 			});
 			actions.push({
-				label: 'צור קבלה',
+				label: 'צור קבלה על סמך הצעות מחיר',
 				action: () => {
-					console.log('create receipt');
+					create_receipt(selected_data);
 				}
 			});
 		}
 
 		if (only_invoices_selected && only_one_client_selected) {
 			actions.push({
-				label: 'צור קבלה',
+				label: 'צור קבלה על סמך חשבונית',
 				action: () => {
-					console.log('create receipt');
+					create_receipt(selected_data);
 				}
 			});
 		}
 
 		if (only_receipts_selected && only_one_client_selected) {
 			actions.push({
-				label: 'צור חשבונית',
+				label: 'צור חשבונית על סמך קבלות',
 				action: () => {
-					console.log('create invoice');
+					create_invoice(selected_data);
 				}
 			});
 		}

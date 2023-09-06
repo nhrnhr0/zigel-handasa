@@ -1,5 +1,16 @@
 
 import { API_AWAITING_PROJECTS,API_PROJECTS, BASE_SERVER_URL } from '$lib/consts';
+    import {API_ACCOUNTING_DOCS_GET_MORNING_INFO} from '$lib/consts';
+
+export async function network_get_morning_info(ids) {
+    console.log('network_get_morning_info');
+    let url = `${API_ACCOUNTING_DOCS_GET_MORNING_INFO}`;
+    if (ids) {
+        url += `?morning_ids[]=${ids}`;
+    }
+    let res =await fetch(url, {method: 'GET',});
+    return res;
+}
 
 export async function network_update_awaiting_project(project_id, project_data) {
     console.log('network_update_project');

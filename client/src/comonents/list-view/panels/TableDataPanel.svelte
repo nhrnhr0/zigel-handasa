@@ -32,7 +32,6 @@
 		} else {
 			selected_ids = {};
 		}
-		debugger;
 		select_all = e.target.checked;
 		update_selected_data();
 		if (on_select_change) {
@@ -52,7 +51,6 @@
 	}
 
 	function update_selected_data() {
-		debugger;
 		let selected_ids_array = Object.entries(selected_ids)
 			.filter((e) => e[1] === true)
 			.map((e) => e[0]);
@@ -68,7 +66,6 @@
 		}
 		check_if_all_selected();
 		update_selected_data();
-		debugger;
 
 		if (on_select_change) {
 			on_select_change(selected_ids, selected_data);
@@ -143,7 +140,6 @@
 
 	function preform_sort(field, current_field_key) {
 		console.log('preform_sort', field, current_field_key);
-		debugger;
 		if (field.sortable === true) {
 			const url_params = new URLSearchParams(window.location.search);
 			const ordering = url_params.get(ORDERING_QUERY_PARAM) || '';

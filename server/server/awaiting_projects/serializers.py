@@ -5,7 +5,7 @@ from .models import AwaitingProject
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 from client.models import Client
-from client.serializers import ClientSelectSerializer
+from client.serializers import ClientSelectSerializer,get_all_clients_select
 
 class AwaitingProjectSerializer(ModelSerializer):
     client__name = serializers.CharField(source='root_price_proposal.client.name', read_only=True)
@@ -19,20 +19,24 @@ class AwaitingProjectSerializer(ModelSerializer):
         fields = ('id', 'name','client__name','last_comment_text','alert_date','created_at','updated_at','total',)
 
 class AwaitingProjectDetailSerializer(ModelSerializer):
-    client = ClientSelectSerializer(read_only=True)
+    client = serializers.SerializerMethodField()
     client_options = serializers.SerializerMethodField()
     api_data = serializers.SerializerMethodField()
     alert_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%S", required=False, allow_null=True)
     # if comments is None: we need to return an empty list
     comments = serializers.SerializerMethodField()
+    total = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True, source='root_price_proposal.total')
     
+    def get_client(self, obj):
+        # to hanle multiselect we return [clientSerializer] and not clientSerializer
+        return [ClientSelectSerializer(obj.root_price_proposal.client, read_only=True).data]
     def get_comments(self, obj):
         if obj.comments is None:
             return []
         return obj.comments
     
     def get_client_options(self, obj):
-        return [{'value':client.id,'label':client.name} for client in Client.objects.all()]
+        return get_all_clients_select()
     
     
     def get_api_data(self, obj):

@@ -28,7 +28,6 @@
 	function submit() {
 		console.log('submit');
 		console.log('value: ', value);
-		debugger;
 		network_reject_awaiting_project(awaiting_project_id, value).then((res) => {
 			console.log('res: ', res);
 			if (res.status == 200) {

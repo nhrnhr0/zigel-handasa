@@ -31,7 +31,6 @@
 		}
 
 		// set the page size
-		debugger;
 		if (curr_fullpage_url) {
 			let split_url = curr_fullpage_url.split('?');
 			if (split_url.length > 1) {
@@ -47,7 +46,6 @@
 
 	function preform_filter() {
 		const url_params = new URLSearchParams(window.location.search);
-		debugger;
 		// let query_params = '';
 		// iterate over filter_elements
 		for (const [key, value] of Object.entries(filter_elements)) {

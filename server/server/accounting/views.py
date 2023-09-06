@@ -70,8 +70,9 @@ def accountingDocsAPIDescription(request):
             },
         },
         'fields': {
-            'client__name': {
-                'lable': 'לקוח',
+            
+            'doc_number': {
+                'lable': 'מספר מסמך',
                 'sortable': True,
                 'type': 'text',
             },
@@ -80,13 +81,13 @@ def accountingDocsAPIDescription(request):
                 'sortable': True,
                 'type': 'text',
             },
-            'project__names': {
-                'lable': 'פרויקט',
+            'client__name': {
+                'lable': 'לקוח',
                 'sortable': True,
                 'type': 'text',
             },
-            'doc_number': {
-                'lable': 'מספר מסמך',
+            'project__names': {
+                'lable': 'פרויקט',
                 'sortable': True,
                 'type': 'text',
             },
@@ -107,3 +108,13 @@ def accountingDocsAPIDescription(request):
     }
     from django.http import JsonResponse
     return JsonResponse({'api-description': ret})
+
+from .serializers import AccountingDocDetailSerializer
+
+from django.http import JsonResponse
+def get_accounting_docs_morning_info(request):
+    morning_ids = request.GET.get('morning_ids[]')
+    morning_ids = morning_ids.split(',')
+    from accounting.models import AccountingDoc
+    docs = AccountingDoc.objects.filter(morning_id__in=morning_ids)
+    return JsonResponse({'docs':AccountingDocDetailSerializer(docs,many=True).data})

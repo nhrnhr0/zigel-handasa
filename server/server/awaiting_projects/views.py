@@ -17,7 +17,7 @@ from core.pagination import StandardResultsSetPagination
 from core.filters import MultiSelectFilter, CreatedAtBetweenDateFilterBackend, UpdatedAtBetweenDateFilterBackend,multiSelectFilterFactory
 
 class AwaitingProjectsListView(generics.ListAPIView):
-    queryset = AwaitingProject.objects.select_related('client', 'root_price_proposal').all()
+    queryset = AwaitingProject.objects.select_related('root_price_proposal__client', 'root_price_proposal').all()
     serializer_class = AwaitingProjectSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend,filters.SearchFilter,filters.OrderingFilter,multiSelectFilterFactory('root_price_proposal__client__in'),]
@@ -159,8 +159,10 @@ class AwaitingProjectRetriveUpdateView(APIView):
         serializer = self.class_serializer(obj, data=request.data)
         if serializer.is_valid():
             saved_obj = serializer.save()
-            saved_obj.client_id = request.data['client']['value']
-            saved_obj.root_price_proposal.client_id = request.data['client']['value']
+            if len(request.data['client']) > 0:
+                saved_obj.client_id = request.data['client'][0]['value']
+                saved_obj.root_price_proposal.client_id = request.data['client'][0]['value']
+            
             saved_obj.root_price_proposal.total = request.data['api_data']['total']
             saved_obj.root_price_proposal.api_data = request.data['api_data']
             saved_obj.root_price_proposal.save()
@@ -178,22 +180,20 @@ def awaitingProjectApproveView(request, pk):
     root_price_proposal = obj.root_price_proposal
     project = Project.objects.create(
         name=obj.name,
-        client=obj.client,
-        last_comment=obj.last_comment or '',
-        total=obj.total,
         order_number=order_number,
     )
     
-    project.comments.set(obj.comments.all())
+    project.comments = obj.comments
     
     obj.delete()
     root_price_proposal.active = True
     
     
     project.root_price_proposal = root_price_proposal
-    project.save()
-    root_price_proposal.project = project
     root_price_proposal.save()
+    project.save()
+    # root_price_proposal.project = project
+    # root_price_proposal.save()
     return Response(status=status.HTTP_200_OK)
 
 

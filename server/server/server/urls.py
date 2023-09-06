@@ -27,7 +27,7 @@ from morning_api.views import morningWebhookClientView,morningWebhookDocumentVie
 from morning_api.api import test
 from project.views import ProjectRetriveUpdateView
 from rejectedProject.views import RejectedProjectListView,rejectedProjectsAPIDescription
-from accounting.views import AccountingDocListView,accountingDocsAPIDescription
+from accounting.views import AccountingDocListView,accountingDocsAPIDescription,get_accounting_docs_morning_info
 urlpatterns = [
     path("__debug__/", include("debug_toolbar.urls")),
     path('admin/', admin.site.urls),
@@ -58,6 +58,8 @@ urlpatterns = [
     # accounting
     path('accounting-docs/', AccountingDocListView.as_view()),
     path('accounting-docs-description/', accountingDocsAPIDescription),
+    
+    path('accounting-docs-morning-info/', get_accounting_docs_morning_info),
     
     
     # morning-webhook

@@ -14,3 +14,6 @@ class ClientSelectSerializer(ModelSerializer):
     class Meta:
         model = Client
         fields = ('value', 'label',)
+        
+def get_all_clients_select():
+    return [{'value':client.id,'label':client.name} for client in Client.objects.all()]

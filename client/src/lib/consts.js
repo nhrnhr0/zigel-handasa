@@ -18,6 +18,7 @@ export const API_REJECTED_PROJECT_DESCRIPTION = BASE_SERVER_URL + '/rejected-pro
 export const API_ACCOUNTING_DOCS = BASE_SERVER_URL + '/accounting-docs/';
 export const API_ACCOUNTING_DOCS_DESCRIPTION = BASE_SERVER_URL + '/accounting-docs-description/';
 
+export const API_ACCOUNTING_DOCS_GET_MORNING_INFO = BASE_SERVER_URL + '/accounting-docs-morning-info/';
 
 export const SEARCH_QUERY_PARAM = 'search';
 export const ORDERING_QUERY_PARAM = 'ordering';

@@ -167,7 +167,6 @@
 								class="btn btn-success"
 								on:click={(e) => {
 									e.preventDefault();
-									debugger;
 									// make sure all fields are filled (item.description != '', item.quantity != '', item.price != '')
 									// if not, show error message
 									// if yes, set editable to false
@@ -272,7 +271,6 @@
 							<button
 								class="btn"
 								on:click={(e) => {
-									debugger;
 									set_editable_item(i, true);
 									e.preventDefault();
 								}}
