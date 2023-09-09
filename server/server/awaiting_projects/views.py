@@ -28,7 +28,7 @@ class AwaitingProjectsListView(generics.ListAPIView):
         'updated_at': ['lte','gte'],
         'alert_date': ['lte','gte'],
     }
-    search_fields = ['name','client__name','total','last_comment',]
+    search_fields = ['name','root_price_proposal__client__name','root_price_proposal__total','comments',]
     pagination_class = StandardResultsSetPagination
 
 from client.models import Client

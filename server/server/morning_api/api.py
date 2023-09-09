@@ -75,6 +75,7 @@ class MorningAPI(metaclass=SingletonMeta):
                     'paymentTerms': client['paymentTerms'],
                     'phone': client['phone'],
                     'emails': client['emails'],
+                    'api_data': client,
                 }
             )
             if not created:
@@ -84,7 +85,9 @@ class MorningAPI(metaclass=SingletonMeta):
                 client_obj.paymentTerms = client['paymentTerms']
                 client_obj.phone = client['phone']
                 client_obj.emails = client['emails']
+                client_obj.api_data = client
                 client_obj.save()
+        return clients
     def get_all_clients_from_morning(self):
         import time
         print('syncing clients from morning')

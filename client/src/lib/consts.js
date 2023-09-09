@@ -1,6 +1,7 @@
 
 
-export const BASE_SERVER_URL = 'https://zigel-admin.ms-global.co.il' //'http://127.0.0.1:8000';
+// export const BASE_SERVER_URL = 'https://zigel-admin.ms-global.co.il' //'http://127.0.0.1:8000';
+export const BASE_SERVER_URL = 'http://127.0.0.1:8000';
 
 
 export const API_NAVBAR = BASE_SERVER_URL + '/navbar';

@@ -11,5 +11,11 @@ class Client(models.Model):
     emails = models.JSONField(default=list)
     morning_id = models.CharField(max_length=100, blank=True)
     morning_last_update = models.DateTimeField(auto_now=True)
+    api_data = models.JSONField(null=True, blank=True)
     def __str__(self):
         return f"{self.name}"
+    
+    def get_data(self):
+        if self.api_data is None:
+            return {}
+        return self.api_data

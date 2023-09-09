@@ -1,14 +1,5 @@
 from django.shortcuts import render
 
-# Create your views here.
-# class AwaitingProjectsListView(generics.ListAPIView):
-#     queryset = AwaitingProject.objects.select_related('client').all()
-#     serializer_class = AwaitingProjectSerializer
-#     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-#     filter_backends = [django_filters.rest_framework.DjangoFilterBackend,filters.SearchFilter,filters.OrderingFilter,CreatedAtBetweenDateFilterBackend,UpdatedAtBetweenDateFilterBackend,]
-#     filterset_fields = ['name','created_at','updated_at',]
-#     search_fields = ['name','client__name','total','last_comment',]
-#     pagination_class = StandardResultsSetPagination
 from rest_framework import generics, permissions
 from .serializers import AccountingDocSerializer
 from .models import AccountingDoc
@@ -112,6 +103,9 @@ def accountingDocsAPIDescription(request):
 from .serializers import AccountingDocDetailSerializer
 
 from django.http import JsonResponse
+from rest_framework.decorators import api_view
+
+@api_view(["GET"])
 def get_accounting_docs_morning_info(request):
     morning_ids = request.GET.get('morning_ids[]')
     morning_ids = morning_ids.split(',')

@@ -17,6 +17,13 @@ FINANCIAL_DOC_TYPES_DICT = {
     400: 'קבלה',
 }
 
+# through class for m2m relationship between the parents docs and the docs that are related to them
+class AccountingDocRelation(models.Model):
+    parent = models.ForeignKey('accounting.AccountingDoc', on_delete=models.CASCADE, related_name='childs')
+    child = models.ForeignKey('accounting.AccountingDoc', on_delete=models.CASCADE, related_name='parents')
+    total = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, default=0)
+    class Meta:
+        unique_together = ('parent', 'child')
 
 class AccountingDoc(models.Model):
     client = models.ForeignKey('client.Client', on_delete=models.SET_NULL, null=True, blank=True)
@@ -27,8 +34,8 @@ class AccountingDoc(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     api_data = models.JSONField(null=True, blank=True)
     morning_id = models.CharField(max_length=500, null=True, blank=True, unique=True)
-    childs = models.ManyToManyField('self', blank=True, symmetrical=False, related_name='parent_docs')
     root_price_proposals = models.ManyToManyField('accounting.AccountingDocPriceProposal', blank=True, related_name='child_docs')
+    based_on = models.ManyToManyField('self', blank=True, through='accounting.AccountingDocRelation', symmetrical=False, related_name='related_to')
     
     is_root_doc = property(lambda self: self.childs.count() > 0)
 
