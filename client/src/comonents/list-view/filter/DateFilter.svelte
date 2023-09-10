@@ -1,8 +1,10 @@
 <script>
+	import { onMount } from 'svelte';
+	import Flatpickr from '../../shered/flatpicker/Flatpickr.svelte';
+
 	export let title;
 	export let slug;
 	export let value = {};
-
 	export function reset_filter() {
 		value = {};
 	}
@@ -30,10 +32,37 @@
 		return ret;
 	}
 
+	function handleChange_gte(event) {
+		const [selectedDates, dateStr] = event.detail;
+		console.log({ selectedDates, dateStr });
+		value['from'] = dateStr;
+	}
+
+	function handleChange_lte(event) {
+		const [selectedDates, dateStr] = event.detail;
+		console.log({ selectedDates, dateStr });
+		value['to'] = dateStr;
+	}
+
 	export function set_from_url(url) {
+		// 2023-09-08 12:00
 		const url_params = new URLSearchParams(url.split('?')[1]);
 		value['from'] = url_params.get(`${slug}__gte`);
 		value['to'] = url_params.get(`${slug}__lte`);
+
+		// set the value of the flatpickr
+		const fp_gte = document.getElementById(`${slug}__gte`);
+		const fp_lte = document.getElementById(`${slug}__lte`);
+
+		if (fp_gte && fp_lte) {
+			debugger;
+			if (value['from']) {
+				fp_gte._flatpickr.setDate(value['from'], true, 'Y-m-d H:i');
+			}
+			if (value['to']) {
+				fp_lte._flatpickr.setDate(value['to'], true, 'Y-m-d H:i');
+			}
+		}
 	}
 </script>
 
@@ -44,23 +73,25 @@
 		<div class="input-group-preappend">
 			<span class="input-group-text">מ</span>
 		</div>
-		<input
-			type="date"
-			class="form-control"
-			id={slug}
-			placeholder={title}
-			bind:value={value['from']}
+		<Flatpickr
+			on:change={handleChange_gte}
+			id="{slug}__gte"
+			on:close={() => {
+				console.log('closed');
+			}}
+			placeholder="בחר תאריך"
 		/>
 
 		<div class="input-group-append">
 			<span class="input-group-text">עד</span>
 		</div>
-		<input
-			type="date"
-			class="form-control"
-			id={slug}
-			placeholder={title}
-			bind:value={value['to']}
+		<Flatpickr
+			on:change={handleChange_lte}
+			id="{slug}__lte"
+			on:close={() => {
+				console.log('closed');
+			}}
+			placeholder="בחר תאריך"
 		/>
 	</div>
 </div>

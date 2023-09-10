@@ -24,6 +24,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"flatpickr": "^4.6.13",
 		"svelte-modals": "^1.3.0",
 		"svelte-multiselect": "^10.1.0"
 	}

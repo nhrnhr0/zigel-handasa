@@ -12,9 +12,7 @@
 	$: {
 		// Remove zero-length tokens.
 		const tokens = $page.url.pathname.split('/').filter((t) => t !== '');
-		debugger;
 
-		debugger;
 		// Create { label, href } pairs for each token.
 		let tokenPath = '';
 		crumbs = tokens.map((t) => {
