@@ -1,5 +1,10 @@
 <script>
-	export let form_data;
+	// export let form_data;
+	export let items;
+	export let discount;
+	export let subtotal;
+	export let tax;
+	export let total;
 
 	function calculate_item_total(item) {
 		let total = (item.price / (item.taxIncludedInPrice ? 1.17 : 1)) * item.quantity;
@@ -7,7 +12,7 @@
 	}
 
 	function add_empty_item() {
-		form_data.api_data.items.push({
+		items.push({
 			description: '',
 			sku: '',
 			quantity: 1,
@@ -17,63 +22,53 @@
 			tax: [{ name: 'VAT', rate: 0.17 }],
 			editable: true
 		});
-		form_data.api_data.items = [...form_data.api_data.items];
+		items = [...items];
 	}
 
 	function set_editable_item(index, editable) {
-		form_data.api_data.items[index].editable = editable;
+		items[index].editable = editable;
 	}
 
-	// listiner to update the form_data.api_data.total, form_data.api_data.subtotal, form_data.api_data.discount.total, form_data.api_data.tax[0].total
-	// and init form_data.api_data.discount if it is undefined
+	// listiner to update the total, subtotal, discount.total, tax[0].total
+	// and init discount if it is undefined
 	$: {
-		// set form_data.api_data.subtotal based on the items
-		let subtotal = 0;
-		for (const item of form_data.api_data.items) {
-			subtotal += calculate_item_total(item);
+		// set subtotal based on the items
+		let _subtotal = 0;
+		for (const item of items) {
+			_subtotal += calculate_item_total(item);
 		}
-		form_data.api_data.subtotal = subtotal;
-		if (subtotal != 0) {
-			if (form_data.api_data.discount == undefined) {
-				form_data.api_data.discount = {
+		subtotal = _subtotal;
+		if (_subtotal != 0) {
+			if (discount == undefined) {
+				discount = {
 					type: 'amount',
 					value: '',
 					total: 0
 				};
 			}
 		}
-		if (
-			form_data.api_data.discount.type &&
-			form_data.api_data.discount.value == undefined &&
-			subtotal != 0
-		) {
-			if (form_data.api_data.discount.type === 'amount') {
-				form_data.api_data.discount.value = -1 * form_data.api_data.discount.total;
+		if (discount.type && discount.value == undefined && subtotal != 0) {
+			if (discount.type === 'amount') {
+				discount.value = -1 * discount.total;
 			} else {
-				form_data.api_data.discount.value =
-					-1 * (form_data.api_data.discount.total / subtotal) * 100;
+				discount.value = -1 * (discount.total / subtotal) * 100;
 			}
 		}
-		// set form_data.api_data.discount.total based on the items and form_data.api_data.discount.value
-		let val = form_data.api_data.discount.value || 0;
-		if (form_data.api_data.discount.type === 'amount') {
-			form_data.api_data.discount.total = parseFloat(val).toFixed(2);
+		// set discount.total based on the items and discount.value
+		let val = discount.value || 0;
+		if (discount.type === 'amount') {
+			discount.total = parseFloat(val).toFixed(2);
 		} else {
-			form_data.api_data.discount.total = parseFloat((val / 100) * subtotal).toFixed(2);
+			discount.total = parseFloat((val / 100) * subtotal).toFixed(2);
 		}
 
-		// calculate the tax (form_data.api_data.tax[0].total) = (subtotal - form_data.api_data.discount.total) * form_data.api_data.tax[0].rate
-		form_data.api_data.tax[0].total = (
-			(form_data.api_data.subtotal - form_data.api_data.discount.total) *
-			form_data.api_data.tax[0].rate
-		).toFixed(2);
+		// calculate the tax (tax[0].total) = (subtotal - discount.total) * tax[0].rate
+		tax[0].total = ((subtotal - discount.total) * tax[0].rate).toFixed(2);
 
 		// set the total
-		form_data.api_data.total = (
-			parseFloat(form_data.api_data.subtotal) -
-			parseFloat(form_data.api_data.discount.total) +
-			parseFloat(form_data.api_data.tax[0].total)
-		).toFixed(2);
+		total = (parseFloat(subtotal) - parseFloat(discount.total) + parseFloat(tax[0].total)).toFixed(
+			2
+		);
 	}
 </script>
 
@@ -105,7 +100,7 @@
 		</th>
 	</thead>
 	<tbody>
-		{#each form_data.api_data.items as item, i}
+		{#each items as item, i}
 			{#if item.editable}
 				<tr class="editable-row" id="editable-row-{i}">
 					<td>
@@ -208,8 +203,8 @@
 								class="delete-button btn"
 								on:click={(e) => {
 									e.preventDefault();
-									form_data.api_data.items.splice(i, 1);
-									form_data.api_data.items = [...form_data.api_data.items];
+									items.splice(i, 1);
+									items = [...items];
 								}}
 							>
 								<svg
@@ -307,8 +302,8 @@
 								class="btn delete-btn"
 								on:click={(e) => {
 									e.preventDefault();
-									form_data.api_data.items.splice(i, 1);
-									form_data.api_data.items = [...form_data.api_data.items];
+									items.splice(i, 1);
+									items = [...items];
 								}}
 							>
 								<svg
@@ -350,23 +345,18 @@
 			</td>
 			<td>
 				<div class="description-value" style="font-weight:bold;">
-					{form_data.api_data.subtotal.toFixed(2)}
+					{subtotal.toFixed(2)}
 				</div>
 			</td>
 			<td />
 		</tr>
-		{#if form_data.api_data.items.length > 0 && form_data.api_data.discount}
+		{#if items.length > 0 && discount}
 			<tr>
 				<td colspan="4" />
 				<td>
 					<div class="my-row">
 						<label for="discount">הנחה</label>
-						<select
-							name="discount"
-							id="discount"
-							class="form-control"
-							bind:value={form_data.api_data.discount.type}
-						>
+						<select name="discount" id="discount" class="form-control" bind:value={discount.type}>
 							<option value="amount">סכום</option>
 							<option value="percentage">%</option>
 						</select>
@@ -379,14 +369,14 @@
 						id="discountValue"
 						name="discountValue"
 						placeholder="הקלידו את ההנחה"
-						bind:value={form_data.api_data.discount.value}
+						bind:value={discount.value}
 					/>
 				</td>
 				<td>
 					<div class="description-value" style="font-weight:bold;">
-						({form_data.api_data.discount.total})
+						({discount.total})
 						<!-- {#if form_data.discount.type === 'percentage'}
-											{(form_data.api_data.subtotal * (form_data.discount.total / 100)).toFixed(2)}
+											{(subtotal * (form_data.discount.total / 100)).toFixed(2)}
 										{:else if form_data.discount.type === 'amount'}
 											{form_data.discount.total}
 										{/if} -->
@@ -400,7 +390,7 @@
 				</td>
 				<td>
 					<div style="font-weight: bold;">
-						{form_data.api_data.tax[0].total}
+						{tax[0].total}
 					</div>
 				</td>
 			</tr>
@@ -421,7 +411,7 @@
 						style="font-weight: bold;
                     "
 					>
-						{form_data.api_data.total}
+						{total}
 					</div>
 				</td>
 			</tr>

@@ -58,7 +58,12 @@
 			<h4 class="form-title">פירוט שירותים ופריטים</h4>
 			<!-- headers -->
 			<div class="container">
-				<DocumentIncomeTable bind:form_data />
+				<DocumentIncomeTable
+					bind:items={form_data.api_data.items}
+					bind:discount={form_data.api_data.discount}
+					bind:tax={form_data.api_data.tax}
+				/>
+				{JSON.stringify()}
 			</div>
 		</div>
 	</div>

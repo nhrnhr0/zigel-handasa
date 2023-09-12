@@ -9,7 +9,7 @@ class Client(models.Model):
     paymentTerms = models.IntegerField(default=0)
     phone = models.CharField(max_length=100, blank=True)
     emails = models.JSONField(default=list)
-    morning_id = models.CharField(max_length=100, blank=True)
+    morning_id = models.CharField(max_length=100, blank=True, unique=True)
     morning_last_update = models.DateTimeField(auto_now=True)
     api_data = models.JSONField(null=True, blank=True)
     def __str__(self):

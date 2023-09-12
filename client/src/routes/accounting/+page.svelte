@@ -7,7 +7,6 @@
 	function create_invoice(docs) {
 		// goto new invoice page with docs ids in query params linkedDocumentIds=['morning_id1',...]
 		let url = '/accounting/new/invoice/?linkedDocumentIds=';
-		debugger;
 		for (const doc of docs) {
 			url += doc.morning_id + ',';
 		}
