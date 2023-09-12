@@ -19,7 +19,7 @@ class AccountingDocSerializer(serializers.ModelSerializer):
     class Meta:
         model = AccountingDoc
 
-        fields = ('id','client__name', 'project__names', 'doc_number','type','total','morning_id','created_at','type__name',)
+        fields = ('id','client__name', 'project__names', 'doc_number','type','total','total_before_tax','morning_id','created_at','type__name',)
 
 
 

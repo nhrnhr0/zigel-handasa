@@ -20,3 +20,9 @@
 		>
 	</li>
 </ul>
+
+<style lang="scss">
+	ul.list-inline {
+		padding: 0px;
+	}
+</style>

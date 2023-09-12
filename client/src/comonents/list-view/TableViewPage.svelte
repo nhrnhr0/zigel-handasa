@@ -3,8 +3,8 @@
 	import TableFilterPanel from './panels/TableFilterPanel.svelte';
 	import TableDataPanel from './panels/TableDataPanel.svelte';
 
-	export let description_url;
-	export let api_url;
+	export let custom_height = undefined;
+
 	export let allow_select = false;
 	export let actions;
 
@@ -12,23 +12,6 @@
 	export let api_data = undefined;
 
 	export let on_select_change = undefined;
-
-	const fetchDescription = async () => {
-		const res = await fetch(description_url);
-		description_data = await res.json();
-	};
-
-	const fetchApiData = async () => {
-		// add our filters (query params) to the url
-		let url = api_url + window.location.search;
-		const res = await fetch(url);
-		api_data = await res.json();
-	};
-
-	onMount(async () => {
-		fetchDescription();
-		fetchApiData();
-	});
 </script>
 
 <!-- right panel with filters
@@ -43,6 +26,7 @@
 				{api_data}
 				{allow_select}
 				{on_select_change}
+				{custom_height}
 				bind:actions
 			/>
 		{/if}

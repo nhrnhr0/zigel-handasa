@@ -10,13 +10,14 @@ from client.serializers import ClientSelectSerializer,get_all_clients_select
 class AwaitingProjectSerializer(ModelSerializer):
     client__name = serializers.CharField(source='root_price_proposal.client.name', read_only=True)
     total = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True, source='root_price_proposal.total')
+    total_before_tax = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True, source='root_price_proposal.total_before_tax')
     last_comment_text = serializers.SerializerMethodField()
-    
+    doc_number = serializers.CharField(source='root_price_proposal.doc_number', read_only=True)
     def get_last_comment_text(self, obj):
         return obj.get_last_comment_text()
     class Meta:
         model = AwaitingProject
-        fields = ('id', 'name','client__name','last_comment_text','alert_date','created_at','updated_at','total',)
+        fields = ('id', 'name','client__name','last_comment_text','alert_date','created_at','updated_at','total','total_before_tax', 'doc_number')
 
 class AwaitingProjectDetailSerializer(ModelSerializer):
     client = serializers.SerializerMethodField()

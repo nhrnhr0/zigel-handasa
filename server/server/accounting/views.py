@@ -82,10 +82,10 @@ def accountingDocsAPIDescription(request):
                 'sortable': True,
                 'type': 'text',
             },
-            'total': {
-                'lable': 'סה"כ',
+            'total_before_tax': {
+                'lable': 'סה"כ (לפני מע"מ)',
                 'sortable': True,
-                'type': 'text',
+                'type': 'currency',
             },
             'created_at': {
                 'lable': 'נוצר בתאריך',

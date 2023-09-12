@@ -75,15 +75,15 @@ def projectsAPIDescription(request):
                 'name': 'נוצר בתאריך',
                 'slug': 'created_at',
             },
-            'updated_at':{
-                'type':'date',
-                'name': 'עודכן בתאריך',
-                'slug': 'updated_at',
-            },
+            # 'updated_at':{
+            #     'type':'date',
+            #     'name': 'עודכן בתאריך',
+            #     'slug': 'updated_at',
+            # },
         },
         'fields': {
             'name':{
-                'lable': 'שם',
+                'lable': 'תיאור',
                 'sortable': True,
                 'type': 'text',
             },
@@ -92,10 +92,10 @@ def projectsAPIDescription(request):
                 'sortable': True,
                 'type': 'text',
             },
-            'total': {
-                'lable': 'סה"כ',
+            'total_before_tax': {
+                'lable': 'סה"כ (לפני מע"מ)',
                 'sortable': True,
-                'type': 'text',
+                'type': 'currency',
             },
             'last_comment': {
                 'lable': 'הערה אחרונה',
@@ -123,11 +123,11 @@ def projectsAPIDescription(request):
                 'sortable': True,
                 'type': 'date',
             },
-            'updated_at': {
-                'lable': 'עודכן בתאריך',
-                'sortable': True,
-                'type': 'date',
-            },
+            # 'updated_at': {
+            #     'lable': 'עודכן בתאריך',
+            #     'sortable': True,
+            #     'type': 'date',
+            # },
             # 'test': {
             #     'lable': 'test',
             #     'sortable': False,

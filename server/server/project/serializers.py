@@ -9,11 +9,12 @@ class ProjectSerializer(ModelSerializer):
     status__name = serializers.CharField(source='status.name', read_only=True)
     last_comment = serializers.SerializerMethodField()
     total = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True, source='root_price_proposal.total')
+    total_before_tax = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True, source='root_price_proposal.total_before_tax')
     def get_last_comment(self, obj):
         return obj.get_last_comment_text()
     class Meta:
         model = Project
-        fields = ('id', 'name','client__name','last_comment','created_at','updated_at','total','status__name','order_number')
+        fields = ('id', 'name','client__name','last_comment','created_at','updated_at','total','total_before_tax','status__name','order_number')
 
 from client.models import Client
 from project.models import ProjectStatus

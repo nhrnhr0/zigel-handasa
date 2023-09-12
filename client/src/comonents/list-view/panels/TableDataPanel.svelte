@@ -10,6 +10,8 @@
 	import AwaitingProjectsActionCell from '../cells/custom/AwaitingProjectsActionCell.svelte';
 	import ProjectsActionCell from '../cells/custom/ProjectsActionCell.svelte';
 	import BulkActions from '../compontnts/BulkActions.svelte';
+	import CurrencyCell from '../cells/currencyCell.svelte';
+	import AwaitingProjectsAlertDateCell from '../cells/custom/AwaitingProjectsAlertDateCell.svelte';
 	export let description;
 	export let api_data;
 	export let allow_select;
@@ -18,7 +20,9 @@
 	export let select_all = false;
 	export let actions;
 	export let selected_data;
-
+	export let pagination = true;
+	export let show_search_bar = true;
+	export let custom_height = undefined;
 	export let on_select_change = undefined;
 
 	function select_all_rows(e) {
@@ -80,7 +84,7 @@
 		}
 	}
 
-	let table_height_px = `calc(100vh - 300px)`;
+	let table_height_px = custom_height || `calc(100vh - 300px)`;
 
 	onMount(() => {
 		// check if search term is in the url
@@ -214,34 +218,38 @@
 	export let custom_cell_components = {
 		'test-component': TestCustomCell,
 		'awaiting-projects-action-cell': AwaitingProjectsActionCell,
-		'projects-action-cell': ProjectsActionCell
+		'projects-action-cell': ProjectsActionCell,
+		'awaiting-projects-alert-date-cell': AwaitingProjectsAlertDateCell
 	};
 </script>
 
 <div class="col-9 main-area">
 	<!-- pagination results -->
-	<PaginationResult {api_data} />
-	<!-- search box -->
-	<div class="d-flex justify-content-center px-5">
-		<div class="search">
-			<input
-				type="text"
-				class="search-input"
-				placeholder="חיפוש..."
-				name=""
-				bind:value={search_term}
-				on:keypress={search_on_enter}
-			/>
-			<button class="search-icon" on:click={preform_search}> <i class="fa fa-search" /> </button>
+	{#if pagination}
+		<PaginationResult {api_data} />
+	{/if}
+	{#if show_search_bar}
+		<!-- search box -->
+		<div class="d-flex justify-content-center px-5">
+			<div class="search">
+				<input
+					type="text"
+					class="search-input"
+					placeholder="חיפוש..."
+					name=""
+					bind:value={search_term}
+					on:keypress={search_on_enter}
+				/>
+				<button class="search-icon" on:click={preform_search}> <i class="fa fa-search" /> </button>
+			</div>
 		</div>
-	</div>
-
+	{/if}
 	{#if description && api_data}
 		<div class="scroll-table" style="--table-height: {table_height_px}">
-			<table class="table table-bordered">
-				<thead>
+			<table class="table table-bordered table-hover table-striped">
+				<thead class="thead-dark">
 					<tr>
-						<th>#</th>
+						<!-- <th>#</th> -->
 						{#if allow_select}
 							<th>
 								<input
@@ -301,10 +309,10 @@
 						{/each}
 					</tr>
 				</thead>
-				<tbody>
+				<tbody class="table-group-divider">
 					{#each api_data.results as row, i}
 						<tr>
-							<td>{i + 1}</td>
+							<!-- <td>{i + 1}</td> -->
 							{#if allow_select}
 								<td>
 									<input
@@ -319,25 +327,29 @@
 							{/if}
 							{#each Object.keys(description['api-description'].fields) as field_key}
 								<td>
-									{#if description['api-description'].fields[field_key].type === 'datetime'}
-										<HebrewDateTimeCell data={row[field_key]} />
-									{:else if description['api-description'].fields[field_key].type === 'date'}
-										<HebrewDateCell data={row[field_key]} />
-									{:else if description['api-description'].fields[field_key].type === 'custom'}
-										<svelte:component
-											this={custom_cell_components[
-												description['api-description'].fields[field_key].custom_component
-											]}
-											data={{
-												row: row,
-												field_key: field_key,
-												description: description,
-												api_data: api_data
-											}}
-										/>
-									{:else}
-										<RawCell data={row[field_key]} />
-									{/if}
+									<div class="my-td">
+										{#if description['api-description'].fields[field_key].type === 'datetime'}
+											<HebrewDateTimeCell data={row[field_key]} />
+										{:else if description['api-description'].fields[field_key].type === 'date'}
+											<HebrewDateCell data={row[field_key]} />
+										{:else if description['api-description'].fields[field_key].type === 'currency'}
+											<CurrencyCell data={row[field_key]} />
+										{:else if description['api-description'].fields[field_key].type === 'custom'}
+											<svelte:component
+												this={custom_cell_components[
+													description['api-description'].fields[field_key].custom_component
+												]}
+												data={{
+													row: row,
+													field_key: field_key,
+													description: description,
+													api_data: api_data
+												}}
+											/>
+										{:else}
+											<RawCell data={row[field_key]} />
+										{/if}
+									</div>
 								</td>
 							{/each}
 						</tr>
@@ -355,8 +367,30 @@
 <BulkActions bind:actions {selected_data} {clear_select} />
 
 <style lang="scss">
+	table.table {
+		table-layout: fixed;
+		thead {
+			tr {
+				th {
+					text-align: center;
+				}
+			}
+		}
+		tbody {
+			tr {
+				td {
+					.my-td {
+						display: flex;
+						justify-content: center;
+						align-items: center;
+						text-align: center;
+					}
+				}
+			}
+		}
+	}
 	.scroll-table {
-		overflow-y: scroll;
+		overflow-y: auto;
 		height: var(--table-height);
 	}
 	.main-area {

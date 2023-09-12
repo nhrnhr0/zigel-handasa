@@ -2,6 +2,11 @@
 import { API_AWAITING_PROJECTS,API_PROJECTS, BASE_SERVER_URL } from '$lib/consts';
     import {API_ACCOUNTING_DOCS_GET_MORNING_INFO} from '$lib/consts';
 
+export async function network_get_overdue_awaiting_projects() {
+    console.log('network_get_overdue_awaiting_projects');
+    let res = await fetch(`${API_AWAITING_PROJECTS}?overdue=true`, {method: 'GET',});
+    return res;
+}
 
 export async function network_create_invoice_from_price_proposals(invoice_data) {
     console.log('network_create_invoice');
@@ -37,6 +42,20 @@ export async function network_update_awaiting_project(project_id, project_data) 
     });
     return res;
 }
+
+
+export async function network_snooze_awaiting_project(project_id, number_of_days) {
+    console.log('network_snooze_project');
+    let res =await fetch(`${API_AWAITING_PROJECTS}${project_id}/snooze/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({number_of_days:number_of_days})
+    });
+    return res;
+}
+
 
 export async function network_approve_awaiting_project(project_id,order_number) {
     console.log('network_approve_project');

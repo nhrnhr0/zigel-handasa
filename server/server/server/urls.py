@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from navbar.views import NavbarListView
-from awaiting_projects.views import AwaitingProjectsListView, awaitingProjectsAPIDescription,AwaitingProjectRetriveUpdateView,awaitingProjectApproveView,awaitingProjectRejectView
+from awaiting_projects.views import AwaitingProjectsListView, awaitingProjectsAPIDescription,AwaitingProjectRetriveUpdateView,awaitingProjectApproveView,awaitingProjectRejectView,awaitingProjectSnoozeView
 from rejectedProject.views import RejectedReasonSelectView
 
 from project.views import ProjectListView,projectsAPIDescription
@@ -40,6 +40,7 @@ urlpatterns = [
     path('awaiting-projects/<int:pk>/', AwaitingProjectRetriveUpdateView.as_view()),
     path('awaiting-projects/<int:pk>/approve/', awaitingProjectApproveView),
     path('awaiting-projects/<int:pk>/reject/', awaitingProjectRejectView),
+    path('awaiting-projects/<int:pk>/snooze/', awaitingProjectSnoozeView),
     
     path('reject-reasons/', RejectedReasonSelectView.as_view()),
     
