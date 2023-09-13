@@ -11,7 +11,7 @@ from core.pagination import StandardResultsSetPagination
 from core.filters import ClientMultiSelectFilter, TypeMultiSlectFilter
 from project.models import Project
 class AccountingDocListView(generics.ListAPIView):
-    queryset = AccountingDoc.objects.select_related('client').filter(active=True)
+    queryset = AccountingDoc.objects.select_related('client').prefetch_related('root_price_proposals','root_price_proposals__root_project').filter(active=True)
     serializer_class = AccountingDocSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend,filters.SearchFilter,filters.OrderingFilter,CreatedAtBetweenDateFilterBackend,UpdatedAtBetweenDateFilterBackend,CreatedAtBetweenDateFilterBackend,ClientMultiSelectFilter,TypeMultiSlectFilter]
@@ -200,3 +200,12 @@ def remove_tax(total):
     if isinstance(total, str):
         total = Decimal(total)
     return int(total / Decimal(1.17))
+
+
+@api_view(["GET"])
+def get_related_accouting_docs(request, pk):
+    from accounting.models import AccountingDoc
+    doc = AccountingDoc.objects.get(pk=pk)
+    # data = AccountingDocRelatedDocsSerializer(doc).data
+    data = {'todo':'todo'}
+    return JsonResponse(data)

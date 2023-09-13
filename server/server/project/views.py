@@ -82,6 +82,11 @@ def projectsAPIDescription(request):
             # },
         },
         'fields': {
+            'doc_number':{
+                'lable': 'מספר מסמך',
+                'sortable': True,
+                'type': 'text',
+            },
             'name':{
                 'lable': 'תיאור',
                 'sortable': True,
