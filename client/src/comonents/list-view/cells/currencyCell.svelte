@@ -3,7 +3,7 @@
 	let value = new Intl.NumberFormat('he-IL', {
 		style: 'currency',
 		currency: 'ILS',
-		minimumFractionDigits: 2,
+		minimumFractionDigits: 0,
 		maximumFractionDigits: 2
 	}).format(data);
 </script>

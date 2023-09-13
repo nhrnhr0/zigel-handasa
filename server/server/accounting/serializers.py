@@ -3,6 +3,15 @@ from .models import AccountingDoc,AccountingDocRelation
 from rest_framework import serializers
 from project.models import Project
 
+class ChildsAccountingDocRelationSerializer(serializers.ModelSerializer):
+    doc_number = serializers.CharField(source='child.doc_number', read_only=True)
+    doc_date = serializers.CharField(source='child.created_at', read_only=True)
+    type = serializers.CharField(source='child.get_type_display', read_only=True)
+    child_total = serializers.DecimalField(source='child.total_before_tax', read_only=True, max_digits=10, decimal_places=2)
+    class Meta:
+        model = AccountingDocRelation
+        fields = ('id','child','doc_number','type','total','doc_date','child_total')
+
 class AccountingDocSerializer(serializers.ModelSerializer):
     type = serializers.CharField(source='get_type_display', read_only=True)
     client__name = serializers.CharField(source='client.name', read_only=True)

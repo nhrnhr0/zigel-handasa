@@ -107,17 +107,24 @@ def projectsAPIDescription(request):
                 'sortable': True,
                 'type': 'text',
             },
-            'order_number': {
-                'lable': 'מספר הזמנה',
-                'sortable': True,
-                'type': 'text',
-            },
+            # 'order_number': {
+            #     'lable': 'מספר הזמנה',
+            #     'sortable': True,
+            #     'type': 'text',
+            # },
             'projects-action-cell': {
                 'lable': 'פעולות',
                 'sortable': False,
                 'type': 'custom',
                 'custom_component': 'projects-action-cell',
             },
+            'projects-progress-cell': {
+                'lable': 'התקדמות',
+                'sortable': False,
+                'type': 'custom',
+                'custom_component': 'projects-progress-cell',
+            },
+            
             'created_at': {
                 'lable': 'נוצר בתאריך',
                 'sortable': True,
@@ -195,3 +202,19 @@ class ProjectRetriveUpdateView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
         # print(serializer.errors)
         # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+@api_view(['GET'])
+def get_project_accounting_docs(request,pk):
+    from accounting.models import AccountingDoc, AccountingDocRelation
+    from accounting.serializers import ChildsAccountingDocRelationSerializer
+    obj = get_object_or_404(Project,pk=pk)
+    price_prop = obj.root_price_proposal
+    docs = AccountingDocRelation.objects.filter(parent=price_prop)
+    print(docs)
+    serializer = ChildsAccountingDocRelationSerializer(docs,many=True)
+    data = serializer.data
+    return Response(data)
+
+    
+    pass

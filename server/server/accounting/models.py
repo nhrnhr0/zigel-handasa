@@ -24,7 +24,8 @@ class AccountingDocRelation(models.Model):
     total = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, default=0)
     class Meta:
         unique_together = ('parent', 'child')
-
+    def __str__(self) -> str:
+        return str(self.parent) + ' => ' + str(self.child) + ' (' + str(self.total) + ')'
 class AccountingDoc(models.Model):
     client = models.ForeignKey('client.Client', on_delete=models.SET_NULL, null=True, blank=True)
     active = models.BooleanField(default=True)

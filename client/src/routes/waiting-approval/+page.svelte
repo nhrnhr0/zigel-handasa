@@ -4,6 +4,7 @@
 	import { network_get_overdue_awaiting_projects } from '$lib/network.js';
 	import { onMount } from 'svelte';
 	import TableDataPanel from '../../comonents/list-view/panels/TableDataPanel.svelte';
+	import TableFilterPanel from '../../comonents/list-view/panels/TableFilterPanel.svelte';
 	let description_url = API_AWAITING_PROJECTS_DESCRIPTION;
 	let api_url = API_AWAITING_PROJECTS;
 	let description_data = undefined;
@@ -49,11 +50,22 @@
 		/>
 	</div>
 {/if}
-{#if description_data && api_data}
-	<TableViewPage {description_data} {api_data} custom_height="auto" />
-{/if}
+<div class="wraper">
+	<div class="row">
+		{#if description_data && api_data}
+			<TableFilterPanel description={description_data} {api_data} />
+			<TableDataPanel description={description_data} {api_data} {allow_select} />
+		{/if}
+	</div>
+</div>
 
 <style lang="scss">
+	.wraper {
+		.row {
+			margin: 0;
+			padding: 0;
+		}
+	}
 	.overdue-projects {
 		margin: 0.5rem;
 		padding: 1rem;

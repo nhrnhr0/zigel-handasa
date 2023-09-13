@@ -25,7 +25,7 @@ from morning_api.views import morningWebhookClientView,morningWebhookDocumentVie
 
 
 from morning_api.api import test
-from project.views import ProjectRetriveUpdateView
+from project.views import ProjectRetriveUpdateView,get_project_accounting_docs
 from rejectedProject.views import RejectedProjectListView,rejectedProjectsAPIDescription
 from accounting.views import AccountingDocListView,accountingDocsAPIDescription,get_accounting_docs_morning_info,create_invoice_from_price_proposals
 urlpatterns = [
@@ -50,6 +50,7 @@ urlpatterns = [
     path('projects-description/', projectsAPIDescription),
     
     path('projects/<int:pk>/', ProjectRetriveUpdateView.as_view()),
+    path('projects/<int:pk>/accounting-docs/', get_project_accounting_docs),
     
     
     # rejected-projects

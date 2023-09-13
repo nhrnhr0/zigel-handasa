@@ -62,8 +62,9 @@
 					bind:items={form_data.api_data.items}
 					bind:discount={form_data.api_data.discount}
 					bind:tax={form_data.api_data.tax}
+					bind:total={form_data.api_data.total}
+					bind:subtotal={form_data.api_data.subtotal}
 				/>
-				{JSON.stringify()}
 			</div>
 		</div>
 	</div>

@@ -23,11 +23,16 @@
 
 		page_size = parseInt(url_params.get(PAGE_SIZE_QUERY_PARAM) || '50');
 		// get the count of the results
-		count = api_data.count;
-		// get the last page
-		last_page_index = Math.ceil(count / page_size);
+		// count = api_data.count;
+		// // get the last page
+		// last_page_index = Math.ceil(count / page_size);
 		// get the first page
 	});
+
+	$: {
+		count = api_data?.count || 0;
+		last_page_index = Math.ceil(count / page_size);
+	}
 
 	function preform_navigation(e) {
 		console.log('preform_navigation', e.target.innerText);

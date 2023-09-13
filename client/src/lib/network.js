@@ -2,6 +2,12 @@
 import { API_AWAITING_PROJECTS,API_PROJECTS, BASE_SERVER_URL } from '$lib/consts';
     import {API_ACCOUNTING_DOCS_GET_MORNING_INFO} from '$lib/consts';
 
+export async function network_get_project_accounting_docs(project_id) {
+    console.log('network_get_project_accounting_docs');
+    let res = await fetch(`${API_PROJECTS}${project_id}/accounting-docs/`, {method: 'GET',});
+    return res;
+}
+
 export async function network_get_overdue_awaiting_projects() {
     console.log('network_get_overdue_awaiting_projects');
     let res = await fetch(`${API_AWAITING_PROJECTS}?overdue=true`, {method: 'GET',});

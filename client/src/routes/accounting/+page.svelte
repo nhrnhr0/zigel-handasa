@@ -1,8 +1,35 @@
 <script>
-	import TableViewPage from '../../comonents/list-view/TableViewPage.svelte';
 	import { API_ACCOUNTING_DOCS, API_ACCOUNTING_DOCS_DESCRIPTION } from '$lib/consts';
 	import { goto } from '$app/navigation';
+	import TableFilterPanel from '../../comonents/list-view/panels/TableFilterPanel.svelte';
+	import TableDataPanel from '../../comonents/list-view/panels/TableDataPanel.svelte';
+	import { onMount } from 'svelte';
+	let description_url = API_ACCOUNTING_DOCS_DESCRIPTION;
+	let api_url = API_ACCOUNTING_DOCS;
 	let api_data = undefined;
+	let description_data = undefined;
+
+	onMount(async () => {
+		console.log('accounting docs page');
+		debugger;
+		// fetch description
+		fetchDescription();
+		fetchApiData();
+	});
+
+	const fetchDescription = async () => {
+		const res = await fetch(description_url);
+		description_data = await res.json();
+		console.log('description_data', description_data);
+	};
+
+	const fetchApiData = async () => {
+		// add our filters (query params) to the url
+		let url = api_url + window.location.search;
+		const res = await fetch(url);
+		api_data = await res.json();
+		console.log('api_data', api_data);
+	};
 
 	function create_invoice(docs) {
 		// goto new invoice page with docs ids in query params linkedDocumentIds=['morning_id1',...]
@@ -94,14 +121,18 @@
 	}
 </script>
 
-<TableViewPage
-	description_url={API_ACCOUNTING_DOCS_DESCRIPTION}
-	api_url={API_ACCOUNTING_DOCS}
-	bind:api_data
-	allow_select={true}
-	{on_select_change}
-	bind:actions
-/>
+<div class="wraper">
+	<div class="row">
+		<TableFilterPanel description={description_data} {api_data} />
+		<TableDataPanel
+			description={description_data}
+			{api_data}
+			allow_select={true}
+			{on_select_change}
+			bind:actions
+		/>
+	</div>
+</div>
 <!-- {#if selected_ids}
 	{#each Object.keys(selected_ids) as id}
 		<p>{id}</p>
