@@ -85,16 +85,17 @@
 					bind:value={form_data.api_data.remarks}
 				/>
 			</div>
-			<!-- <div class="col">
-						<label for="footer"> הערות בתחתית המסמך </label>
-						<textarea
-							class="form-control"
-							id="fotter"
-							name="fotter"
-							rows="3"
-							placeholder="מתאים לאותיות קטנות, תנאים ודיסקליימר"
-						/>
-					</div> -->
+			<div class="col">
+				<label for="footer"> הערות בתחתית המסמך</label>
+				<textarea
+					class="form-control"
+					id="fotter"
+					name="fotter"
+					rows="3"
+					placeholder="מתאים לאותיות קטנות, תנאים ודיסקליימר"
+					bind:value={form_data.api_data.footer}
+				/>
+			</div>
 		</div>
 	</div>
 </div>
@@ -115,17 +116,18 @@
 					duplicateOptionMsg={'המייל כבר קיים'}
 				/>
 			</div>
-			<!--<br />
-					 <div class="col">
-						<label for="email-content">תוכן נוסף במייל ללקוח</label>
-						<textarea
-							class="form-control"
-							id="email-content"
-							name="email-content"
-							rows="1"
-							placeholder="יצורף לגוף המייל הנשלח ללקוח"
-						/>
-					</div> -->
+			<br />
+			<div class="col">
+				<label for="email-content">תוכן נוסף במייל ללקוח</label>
+				<textarea
+					class="form-control"
+					id="email-content"
+					name="email-content"
+					rows="1"
+					placeholder="יצורף לגוף המייל הנשלח ללקוח"
+					bind:value={form_data.api_data.recipient.email_content}
+				/>
+			</div>
 		</div>
 	</div>
 </div>

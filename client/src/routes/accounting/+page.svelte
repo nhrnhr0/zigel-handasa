@@ -133,8 +133,17 @@
 		/>
 	</div>
 </div>
+
 <!-- {#if selected_ids}
 	{#each Object.keys(selected_ids) as id}
 		<p>{id}</p>
 	{/each}
 {/if} -->
+<style lang="scss">
+	.wraper {
+		.row {
+			margin: 0;
+			padding: 0;
+		}
+	}
+</style>
