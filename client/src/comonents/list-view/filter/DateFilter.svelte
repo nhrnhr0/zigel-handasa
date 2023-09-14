@@ -55,7 +55,6 @@
 		const fp_lte = document.getElementById(`${slug}__lte`);
 
 		if (fp_gte && fp_lte) {
-			debugger;
 			if (value['from']) {
 				fp_gte._flatpickr.setDate(value['from'], true, 'Y-m-d H:i');
 			}

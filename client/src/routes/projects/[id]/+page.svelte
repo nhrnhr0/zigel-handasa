@@ -120,6 +120,8 @@
 	});
 
 	async function update_project(project_id, p_data) {
+		console.log('update_project', project_id, p_data);
+		debugger;
 		const res = await network_update_project(project_id, p_data);
 		console.log('res: ', res);
 		if (res.status == 200) {

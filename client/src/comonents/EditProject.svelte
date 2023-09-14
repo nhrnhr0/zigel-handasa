@@ -4,12 +4,29 @@
 	import CommentsCard from './shered/Cards/CommentsCard.svelte';
 	import { MultiSelect } from 'svelte-multiselect';
 	export let form_data;
+	export let original_data;
 	export let on_update_function;
 	let activeTabId;
 
 	let updateing = false;
 	function save_form_data(e) {
 		e.preventDefault();
+		if (original_data == undefined) {
+			original_data = JSON.parse(JSON.stringify(form_data));
+		}
+		// if the total is diffrent from the original total
+		// we prompt the user to confirm the change and resend the price proposal to the client
+		if (form_data.total != original_data.total) {
+			if (confirm('האם ברצונך לשלוח מחיר חדש ללקוח?')) {
+				// send the price proposal to the client
+				form_data.resend_price_proposal = true;
+			} else {
+				// don't send the price proposal to the client
+				form_data.resend_price_proposal = false;
+			}
+		} else {
+			form_data.resend_price_proposal = false;
+		}
 		updateing = true;
 		on_update_function(form_data.id, form_data).then((res) => {
 			updateing = false;

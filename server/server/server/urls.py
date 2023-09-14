@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from navbar.views import NavbarListView
-from awaiting_projects.views import AwaitingProjectsListView, awaitingProjectsAPIDescription,AwaitingProjectRetriveUpdateView,awaitingProjectApproveView,awaitingProjectRejectView
+from awaiting_projects.views import AwaitingProjectsListView, awaitingProjectsAPIDescription,AwaitingProjectRetriveUpdateView,awaitingProjectApproveView,awaitingProjectRejectView,awaitingProjectSnoozeView
 from rejectedProject.views import RejectedReasonSelectView
 
 from project.views import ProjectListView,projectsAPIDescription
@@ -25,9 +25,10 @@ from morning_api.views import morningWebhookClientView,morningWebhookDocumentVie
 
 
 from morning_api.api import test
-from project.views import ProjectRetriveUpdateView
+from project.views import ProjectRetriveUpdateView,get_project_accounting_docs
 from rejectedProject.views import RejectedProjectListView,rejectedProjectsAPIDescription
-from accounting.views import AccountingDocListView,accountingDocsAPIDescription,get_accounting_docs_morning_info
+from accounting.views import AccountingDocListView,accountingDocsAPIDescription,get_accounting_docs_morning_info,create_invoice_from_price_proposals
+from accounting.views import get_related_accouting_docs
 urlpatterns = [
     path("__debug__/", include("debug_toolbar.urls")),
     path('admin/', admin.site.urls),
@@ -40,6 +41,7 @@ urlpatterns = [
     path('awaiting-projects/<int:pk>/', AwaitingProjectRetriveUpdateView.as_view()),
     path('awaiting-projects/<int:pk>/approve/', awaitingProjectApproveView),
     path('awaiting-projects/<int:pk>/reject/', awaitingProjectRejectView),
+    path('awaiting-projects/<int:pk>/snooze/', awaitingProjectSnoozeView),
     
     path('reject-reasons/', RejectedReasonSelectView.as_view()),
     
@@ -49,6 +51,7 @@ urlpatterns = [
     path('projects-description/', projectsAPIDescription),
     
     path('projects/<int:pk>/', ProjectRetriveUpdateView.as_view()),
+    path('projects/<int:pk>/accounting-docs/', get_project_accounting_docs),
     
     
     # rejected-projects
@@ -59,7 +62,11 @@ urlpatterns = [
     path('accounting-docs/', AccountingDocListView.as_view()),
     path('accounting-docs-description/', accountingDocsAPIDescription),
     
-    path('accounting-docs-morning-info/', get_accounting_docs_morning_info),
+    path('accounting-docs/<int:pk>/related-docs/', get_related_accouting_docs),
+    
+    path('accounting-docs-morning-info/', get_accounting_docs_morning_info), # used to create invoice from price proposals
+    
+    path('create-invoice/', create_invoice_from_price_proposals),
     
     
     # morning-webhook

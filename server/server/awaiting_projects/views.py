@@ -20,16 +20,26 @@ class AwaitingProjectsListView(generics.ListAPIView):
     queryset = AwaitingProject.objects.select_related('root_price_proposal__client', 'root_price_proposal').all()
     serializer_class = AwaitingProjectSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    filter_backends = [django_filters.rest_framework.DjangoFilterBackend,filters.SearchFilter,filters.OrderingFilter,multiSelectFilterFactory('root_price_proposal__client__in'),]
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend,filters.SearchFilter,filters.OrderingFilter,]
     # filterset_fields = ['name','created_at','updated_at',{'alert_date':['lte','gte']},]
     filterset_fields = {
         'name': ['icontains'],
+        'root_price_proposal__client': ['in'],
+        'root_price_proposal__doc_number': ['icontains'],
         'created_at': ['lte','gte'],
         'updated_at': ['lte','gte'],
         'alert_date': ['lte','gte'],
     }
-    search_fields = ['name','root_price_proposal__client__name','root_price_proposal__total','comments',]
+    search_fields = ['name','root_price_proposal__client__name','comments','root_price_proposal__doc_number', 'root_price_proposal__totoal_before_tax']
     pagination_class = StandardResultsSetPagination
+    
+    # if /awaiting-projects/?overdue=true we need to filter by alert_date__lte=now
+    def get_queryset(self):
+        from django.utils import timezone
+        queryset = super().get_queryset()
+        if self.request.query_params.get('overdue', None) == 'true':
+            queryset = queryset.filter(alert_date__lte=timezone.now())
+        return queryset
 
 from client.models import Client
 
@@ -43,9 +53,14 @@ def awaitingProjectsAPIDescription(request):
             'client_options':client_options,
         },
         'filters':{
+            'doc_number':{
+                'type':'text',
+                'name': 'מספר מסמך',
+                'slug': 'root_price_proposal__doc_number__icontains', # TODO
+            },
             'name':{
                 'type':'text',
-                'name': 'שם',
+                'name': 'תיאור',
                 'slug': 'name__icontains',
             },
             'client':{
@@ -71,8 +86,13 @@ def awaitingProjectsAPIDescription(request):
             },
         },
         'fields': {
+            'doc_number': {
+                'lable': 'מספר מסמך',
+                'sortable': True,
+                'type': 'text',
+            },
             'name':{
-                'lable': 'שם',
+                'lable': 'תיאור',
                 'sortable': True,
                 'type': 'text',
             },
@@ -82,10 +102,10 @@ def awaitingProjectsAPIDescription(request):
                 'type': 'text',
             },
             
-            'total': {
-                'lable': 'סה"כ',
+            'total_before_tax': {
+                'lable': 'סה"כ (לפני מע"מ)',
                 'sortable': True,
-                'type': 'text',
+                'type': 'currency',
             },
             'awaiting-projects-action-cell': {
                 'lable': 'פעולות',
@@ -106,7 +126,8 @@ def awaitingProjectsAPIDescription(request):
             'alert_date': {
                 'lable': 'תאריך התראה',
                 'sortable': True,
-                'type': 'date',
+                'type': 'custom',
+                'custom_component': 'awaiting-projects-alert-date-cell',
             },
             'last_comment_text': {
                 'lable': 'הערה אחרונה',
@@ -172,6 +193,21 @@ class AwaitingProjectRetriveUpdateView(APIView):
         print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+@api_view(['POST'])
+def awaitingProjectSnoozeView(request, pk):
+    obj = get_object_or_404(AwaitingProject, pk=pk)
+    print(request.data)
+    number_of_days = request.data['number_of_days']
+    # if str, convert to int
+    if type(number_of_days) == str:
+        number_of_days = int(number_of_days)
+
+    from datetime import timedelta, datetime
+    from django.utils import timezone
+    obj.alert_date = timezone.now() + timedelta(days=number_of_days)
+    obj.save()
+    return Response(status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def awaitingProjectApproveView(request, pk):

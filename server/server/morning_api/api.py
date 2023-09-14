@@ -35,6 +35,37 @@ class MorningAPI(metaclass=SingletonMeta):
     expires = None
     def __init__(self):
         print('init morning api')
+        
+    def create_invoice_from_price_proposals(self, client, date, due_date, income, remarks, fotter,emailContent,description,discount):
+        if discount:
+            if discount.get('type') == 'amount':
+                discount['type'] = 'sum'
+        # POST  /api/v1/documents
+        url = f'{self.BASE_MORNING_URL}/documents'
+        data = {
+            "type": 305,
+            "date": date,
+            "dueDate": due_date,
+            "vatType": 2,
+            "lang": "he",
+            "currency": "ILS",
+            "description": description,
+            "remarks": remarks,
+            "footer": fotter,
+            "emailContent":emailContent,
+            "client": client,
+            "rounding": False,
+            "signed": True,
+            "income": income,
+            "discount":discount
+        }
+        
+        response = self.make_request(url, method='POST', data=json.dumps(data))
+        return response
+        pass
+    def convert_django_date_to_morning_date(self, date):
+        date = datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ')
+        return date.strftime('%Y-%m-%d')
     
     def make_request(self, url, method='GET', data=None, include_auth=True):
         print('making request', method, ' to ', url)

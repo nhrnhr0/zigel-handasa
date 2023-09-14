@@ -21,3 +21,10 @@ class Project(BaseProject):
         
     class Meta:
         ordering = ['-created_at']
+        
+        
+    def get_total_invoices_before_tax(self):
+        root_doc = self.root_price_proposal
+        if root_doc is None:
+            return 0
+        return root_doc.get_total_child_invoices()

@@ -1,6 +1,7 @@
 <script>
 	import ModalApprove from '../../../../modals/awaiting-approval/ModalApprove.svelte';
 	import ModalReject from '../../../../modals/awaiting-approval/ModalReject.svelte';
+	import ModalSnooze from '../../../../modals/awaiting-approval/ModalSnooze.svelte';
 	import { openModal } from 'svelte-modals';
 
 	export let data;
@@ -15,6 +16,10 @@
 
 	function handleRejectClick() {
 		openModal(ModalReject, { awaiting_project_id: data.row.id });
+	}
+
+	function handleSnoozeClick() {
+		openModal(ModalSnooze, { awaiting_project_id: data.row.id });
 	}
 </script>
 
@@ -50,6 +55,14 @@
 			data-placement="top"
 			title="Approve"><i class="fa fa-check" /></button
 		>
+		<button
+			on:click={handleSnoozeClick}
+			class="btn btn-secondary btn-sm rounded-0"
+			type="button"
+			data-toggle="tooltip"
+			data-placement="top"
+			title="Snooze"><i class="fa fa-clock-o" /></button
+		>
 	</li>
 	<!-- <li class="list-inline-item">
 		<button
@@ -61,3 +74,9 @@
 		>
 	</li> -->
 </ul>
+
+<style lang="scss">
+	ul.list-inline {
+		padding: 0px;
+	}
+</style>

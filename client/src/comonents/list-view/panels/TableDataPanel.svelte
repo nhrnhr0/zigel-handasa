@@ -1,6 +1,7 @@
 <script>
+	import { scale } from 'svelte/transition';
 	import { page } from '$app/stores';
-	import { onMount } from 'svelte';
+	import { createEventDispatcher, onMount } from 'svelte';
 	import RawCell from '../cells/RawCell.svelte';
 	import PaginationResult from '../compontnts/PaginationResult.svelte';
 	import { SEARCH_QUERY_PARAM, ORDERING_QUERY_PARAM } from '$lib/consts.js';
@@ -10,6 +11,9 @@
 	import AwaitingProjectsActionCell from '../cells/custom/AwaitingProjectsActionCell.svelte';
 	import ProjectsActionCell from '../cells/custom/ProjectsActionCell.svelte';
 	import BulkActions from '../compontnts/BulkActions.svelte';
+	import CurrencyCell from '../cells/currencyCell.svelte';
+	import AwaitingProjectsAlertDateCell from '../cells/custom/AwaitingProjectsAlertDateCell.svelte';
+	import ProjectsProgressCell from '../cells/custom/ProjectsProgressCell.svelte';
 	export let description;
 	export let api_data;
 	export let allow_select;
@@ -18,8 +22,12 @@
 	export let select_all = false;
 	export let actions;
 	export let selected_data;
-
+	export let pagination = true;
+	export let show_search_bar = true;
+	export let custom_height = undefined;
 	export let on_select_change = undefined;
+	export let expendable = false;
+	let expended_rows = {};
 
 	function select_all_rows(e) {
 		if (e.target.checked) {
@@ -80,12 +88,21 @@
 		}
 	}
 
-	let table_height_px = `calc(100vh - 300px)`;
+	let table_height_px = custom_height || `calc(100vh - 300px)`;
 
 	onMount(() => {
 		// check if search term is in the url
 		const url_params = new URLSearchParams(window.location.search);
 		search_term = url_params.get(SEARCH_QUERY_PARAM) || '';
+	});
+
+	$: {
+		if (description && description['api-description']) {
+			init_after_description_set();
+		}
+	}
+	function init_after_description_set() {
+		const url_params = new URLSearchParams(window.location.search);
 
 		// check if there is a sort param in the url (ordering)
 		// http://127.0.0.1:8000/awaiting-projects/?client__in=1%2C2&ordering=client__name,-name
@@ -119,7 +136,7 @@
 			description['api-description'].fields[field_key].sort_order = i;
 			i++;
 		}
-	});
+	}
 	function search_on_enter(e) {
 		if (e.key === 'Enter') {
 			preform_search();
@@ -210,38 +227,55 @@
 		url_params.set(ORDERING_QUERY_PARAM, new_ordering);
 		location.href = `${$page.url.pathname}?${url_params.toString()}`;
 	}
+	const dispatch = createEventDispatcher();
+	function expendable_button_click(row, index) {
+		expended_rows[row.id] = !expended_rows[row.id];
+		dispatch('expended_row_click', {
+			row: row,
+			expended: expended_rows[row.id],
+			index: index
+		});
+	}
 
 	export let custom_cell_components = {
 		'test-component': TestCustomCell,
 		'awaiting-projects-action-cell': AwaitingProjectsActionCell,
-		'projects-action-cell': ProjectsActionCell
+		'projects-action-cell': ProjectsActionCell,
+		'awaiting-projects-alert-date-cell': AwaitingProjectsAlertDateCell,
+		'projects-progress-cell': ProjectsProgressCell
 	};
 </script>
 
 <div class="col-9 main-area">
 	<!-- pagination results -->
-	<PaginationResult {api_data} />
-	<!-- search box -->
-	<div class="d-flex justify-content-center px-5">
-		<div class="search">
-			<input
-				type="text"
-				class="search-input"
-				placeholder="חיפוש..."
-				name=""
-				bind:value={search_term}
-				on:keypress={search_on_enter}
-			/>
-			<button class="search-icon" on:click={preform_search}> <i class="fa fa-search" /> </button>
+	{#if pagination}
+		<PaginationResult {api_data} />
+	{/if}
+	{#if show_search_bar}
+		<!-- search box -->
+		<div class="d-flex justify-content-center px-5">
+			<div class="search">
+				<input
+					type="text"
+					class="search-input"
+					placeholder="חיפוש..."
+					name=""
+					bind:value={search_term}
+					on:keypress={search_on_enter}
+				/>
+				<button class="search-icon" on:click={preform_search}> <i class="fa fa-search" /> </button>
+			</div>
 		</div>
-	</div>
-
+	{/if}
 	{#if description && api_data}
 		<div class="scroll-table" style="--table-height: {table_height_px}">
-			<table class="table table-bordered">
-				<thead>
+			<table class="table table-bordered table-hover table-striped">
+				<thead class="thead-dark">
 					<tr>
-						<th>#</th>
+						{#if expendable}
+							<th class="expender-td" />
+						{/if}
+						<!-- <th>#</th> -->
 						{#if allow_select}
 							<th>
 								<input
@@ -301,10 +335,38 @@
 						{/each}
 					</tr>
 				</thead>
-				<tbody>
+				<tbody class="table-group-divider">
 					{#each api_data.results as row, i}
 						<tr>
-							<td>{i + 1}</td>
+							{#if expendable}
+								<td class="expender-td">
+									<button
+										type="button"
+										aria-expanded={expended_rows[row.id]}
+										on:click={() => {
+											expendable_button_click(row, i);
+										}}
+										class="btn expender-btn"
+									>
+										<svg
+											width="40px"
+											height="40px"
+											viewBox="0 0 24 24"
+											fill="none"
+											xmlns="http://www.w3.org/2000/svg"
+										>
+											<path
+												d="M16.0686 9H7.9313C7.32548 9 7.02257 9 6.88231 9.1198C6.76061 9.22374 6.69602 9.37967 6.70858 9.53923C6.72305 9.72312 6.93724 9.93731 7.36561 10.3657L11.4342 14.4343C11.6322 14.6323 11.7313 14.7313 11.8454 14.7684C11.9458 14.8011 12.054 14.8011 12.1544 14.7684C12.2686 14.7313 12.3676 14.6323 12.5656 14.4343L16.6342 10.3657C17.0626 9.93731 17.2768 9.72312 17.2913 9.53923C17.3038 9.37967 17.2392 9.22374 17.1175 9.1198C16.9773 9 16.6744 9 16.0686 9Z"
+												stroke="#000000"
+												stroke-width="2"
+												stroke-linecap="round"
+												stroke-linejoin="round"
+											/>
+										</svg>
+									</button>
+								</td>
+							{/if}
+							<!-- <td>{i + 1}</td> -->
 							{#if allow_select}
 								<td>
 									<input
@@ -319,28 +381,50 @@
 							{/if}
 							{#each Object.keys(description['api-description'].fields) as field_key}
 								<td>
-									{#if description['api-description'].fields[field_key].type === 'datetime'}
-										<HebrewDateTimeCell data={row[field_key]} />
-									{:else if description['api-description'].fields[field_key].type === 'date'}
-										<HebrewDateCell data={row[field_key]} />
-									{:else if description['api-description'].fields[field_key].type === 'custom'}
-										<svelte:component
-											this={custom_cell_components[
-												description['api-description'].fields[field_key].custom_component
-											]}
-											data={{
-												row: row,
-												field_key: field_key,
-												description: description,
-												api_data: api_data
-											}}
-										/>
-									{:else}
-										<RawCell data={row[field_key]} />
-									{/if}
+									<div class="my-td">
+										{#if description['api-description'].fields[field_key].type === 'datetime'}
+											<HebrewDateTimeCell data={row[field_key]} />
+										{:else if description['api-description'].fields[field_key].type === 'date'}
+											<HebrewDateCell data={row[field_key]} />
+										{:else if description['api-description'].fields[field_key].type === 'currency'}
+											<CurrencyCell data={row[field_key]} />
+										{:else if description['api-description'].fields[field_key].type === 'custom'}
+											<svelte:component
+												this={custom_cell_components[
+													description['api-description'].fields[field_key].custom_component
+												]}
+												data={{
+													row: row,
+													field_key: field_key,
+													description: description,
+													api_data: api_data
+												}}
+											/>
+										{:else}
+											<RawCell data={row[field_key]} />
+										{/if}
+									</div>
 								</td>
 							{/each}
 						</tr>
+						{#if expendable}
+							<tr class="expended-row" class:expanded={expended_rows[row.id]}>
+								<td colspan={Object.keys(description['api-description'].fields).length + 1}>
+									{#if expended_rows[row.id]}
+										<div class="expended-row-content">
+											<slot
+												name="expended-row-content"
+												{row}
+												row_index={i}
+												show={expended_rows[row.id] === true}
+											>
+												{row.id}
+											</slot>
+										</div>
+									{/if}
+								</td>
+							</tr>
+						{/if}
 					{/each}
 				</tbody>
 			</table>
@@ -355,8 +439,65 @@
 <BulkActions bind:actions {selected_data} {clear_select} />
 
 <style lang="scss">
+	.expender-td,
+	.expender-th {
+		width: 40px;
+		height: 40px;
+	}
+	.expender-td {
+		padding: 0px;
+	}
+	button.expender-btn {
+		background-color: transparent;
+		border: none;
+		padding: 0;
+		width: 40px;
+		height: 40px;
+
+		text-align: center;
+		text-indent: 0;
+		transform: rotate(90deg);
+		svg {
+			fill: #fff;
+			transition: transform 0.25s ease-in;
+			transform-origin: center 45%;
+		}
+		&[aria-expanded='true'] svg {
+			transform: rotate(-90deg);
+		}
+	}
+
+	table.table {
+		table-layout: fixed;
+		thead {
+			tr {
+				th {
+					text-align: center;
+				}
+			}
+		}
+		tbody {
+			tr {
+				td {
+					.my-td {
+						display: flex;
+						justify-content: center;
+						align-items: center;
+						text-align: center;
+					}
+				}
+
+				&.expended-row {
+					display: none;
+					&.expanded {
+						display: table-row;
+					}
+				}
+			}
+		}
+	}
 	.scroll-table {
-		overflow-y: scroll;
+		overflow-y: auto;
 		height: var(--table-height);
 	}
 	.main-area {

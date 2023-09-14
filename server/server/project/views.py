@@ -75,15 +75,20 @@ def projectsAPIDescription(request):
                 'name': 'נוצר בתאריך',
                 'slug': 'created_at',
             },
-            'updated_at':{
-                'type':'date',
-                'name': 'עודכן בתאריך',
-                'slug': 'updated_at',
-            },
+            # 'updated_at':{
+            #     'type':'date',
+            #     'name': 'עודכן בתאריך',
+            #     'slug': 'updated_at',
+            # },
         },
         'fields': {
+            'doc_number':{
+                'lable': 'מספר מסמך',
+                'sortable': True,
+                'type': 'text',
+            },
             'name':{
-                'lable': 'שם',
+                'lable': 'תיאור',
                 'sortable': True,
                 'type': 'text',
             },
@@ -92,10 +97,10 @@ def projectsAPIDescription(request):
                 'sortable': True,
                 'type': 'text',
             },
-            'total': {
-                'lable': 'סה"כ',
+            'total_before_tax': {
+                'lable': 'סה"כ (לפני מע"מ)',
                 'sortable': True,
-                'type': 'text',
+                'type': 'currency',
             },
             'last_comment': {
                 'lable': 'הערה אחרונה',
@@ -107,27 +112,34 @@ def projectsAPIDescription(request):
                 'sortable': True,
                 'type': 'text',
             },
-            'order_number': {
-                'lable': 'מספר הזמנה',
-                'sortable': True,
-                'type': 'text',
-            },
+            # 'order_number': {
+            #     'lable': 'מספר הזמנה',
+            #     'sortable': True,
+            #     'type': 'text',
+            # },
             'projects-action-cell': {
                 'lable': 'פעולות',
                 'sortable': False,
                 'type': 'custom',
                 'custom_component': 'projects-action-cell',
             },
+            'projects-progress-cell': {
+                'lable': 'התקדמות',
+                'sortable': False,
+                'type': 'custom',
+                'custom_component': 'projects-progress-cell',
+            },
+            
             'created_at': {
                 'lable': 'נוצר בתאריך',
                 'sortable': True,
                 'type': 'date',
             },
-            'updated_at': {
-                'lable': 'עודכן בתאריך',
-                'sortable': True,
-                'type': 'date',
-            },
+            # 'updated_at': {
+            #     'lable': 'עודכן בתאריך',
+            #     'sortable': True,
+            #     'type': 'date',
+            # },
             # 'test': {
             #     'lable': 'test',
             #     'sortable': False,
@@ -195,3 +207,19 @@ class ProjectRetriveUpdateView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
         # print(serializer.errors)
         # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+@api_view(['GET'])
+def get_project_accounting_docs(request,pk):
+    from accounting.models import AccountingDoc, AccountingDocRelation
+    from accounting.serializers import ChildsAccountingDocRelationSerializer
+    obj = get_object_or_404(Project,pk=pk)
+    price_prop = obj.root_price_proposal
+    docs = AccountingDocRelation.objects.filter(parent=price_prop)
+    print(docs)
+    serializer = ChildsAccountingDocRelationSerializer(docs,many=True)
+    data = serializer.data
+    return Response(data)
+
+    
+    pass
