@@ -158,7 +158,7 @@
 </script>
 
 {#if form_data}
-	<EditProject bind:form_data on_update_function={update_project} />
+	<EditProject bind:form_data on_update_function={update_project} {original_data} />
 {/if}
 
 <style lang="scss">

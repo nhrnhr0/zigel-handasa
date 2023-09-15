@@ -236,13 +236,14 @@
 			index: index
 		});
 	}
-
-	export let custom_cell_components = {
+	export let user_cell_components = {};
+	let custom_cell_components = {
 		'test-component': TestCustomCell,
 		'awaiting-projects-action-cell': AwaitingProjectsActionCell,
 		'projects-action-cell': ProjectsActionCell,
 		'awaiting-projects-alert-date-cell': AwaitingProjectsAlertDateCell,
-		'projects-progress-cell': ProjectsProgressCell
+		'projects-progress-cell': ProjectsProgressCell,
+		...user_cell_components
 	};
 </script>
 

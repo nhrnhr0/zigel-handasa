@@ -11,7 +11,7 @@ from core.pagination import StandardResultsSetPagination
 from core.filters import ClientMultiSelectFilter, TypeMultiSlectFilter
 from project.models import Project
 class AccountingDocListView(generics.ListAPIView):
-    queryset = AccountingDoc.objects.select_related('client').prefetch_related('root_price_proposals','root_price_proposals__root_project').filter(active=True)
+    queryset = AccountingDoc.objects.select_related('client').prefetch_related('root_price_proposals','root_price_proposals__root_project','parents','childs', 'parents__parent','parents__child','childs__parent', 'childs__child').filter(active=True)
     serializer_class = AccountingDocSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend,filters.SearchFilter,filters.OrderingFilter,CreatedAtBetweenDateFilterBackend,UpdatedAtBetweenDateFilterBackend,CreatedAtBetweenDateFilterBackend,ClientMultiSelectFilter,TypeMultiSlectFilter]
@@ -65,7 +65,8 @@ def accountingDocsAPIDescription(request):
             'doc_number': {
                 'lable': 'מספר מסמך',
                 'sortable': True,
-                'type': 'text',
+                'type': 'custom',
+                'custom_component': 'doc-number-tooltip',
             },
             'type__name': {
                 'lable': 'סוג',
