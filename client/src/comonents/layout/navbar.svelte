@@ -17,6 +17,20 @@
 		{
 			name: 'כספים',
 			url: '/accounting'
+		},
+		{
+			name: 'הגדרות',
+			isDropdown: true,
+			dropdownOptions: [
+				{
+					name: 'סטטוסים',
+					url: '/status'
+				},
+				{
+					name: 'הערות',
+					url: '/comments'
+				}
+			]
 		}
 	];
 </script>
@@ -35,12 +49,45 @@
 		>
 			<span class="navbar-toggler-icon" />
 		</button>
-		<div class="collapse navbar-collapse" id="navbarNav">
+	<!-- 	<div class="collapse navbar-collapse" id="navbarNav">
 			<ul class="navbar-nav">
 				{#each info as item}
 					<li class="nav-item" class:active={$page.url.pathname.includes(item.url)}>
 						<a class="nav-link" href={item.url}>{item.name}</a>
 					</li>
+				{/each}
+			</ul>
+		</div> -->
+			<div class="collapse navbar-collapse" id="navbarNav">
+			<ul class="navbar-nav">
+				{#each info as item}
+					{#if item.isDropdown} <!-- Check if it's a dropdown item -->
+						<li class="nav-item dropdown">
+							<a
+								class="nav-link dropdown-toggle"
+								href="#"
+								id="navbarDropdown"
+								role="button"
+								data-bs-toggle="dropdown"
+								aria-expanded="false"
+							>
+								{item.name}
+							</a>
+							<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+								{#each item.dropdownOptions as dropdownItem}
+									<li>
+										<a class="dropdown-item" href={dropdownItem.url}>
+											{dropdownItem.name}
+										</a>
+									</li>
+								{/each}
+							</ul>
+						</li>
+					{:else}
+						<li class="nav-item" class:active={$page.url.pathname.includes(item.url)}>
+							<a class="nav-link" href={item.url}>{item.name}</a>
+						</li>
+					{/if}
 				{/each}
 			</ul>
 		</div>
