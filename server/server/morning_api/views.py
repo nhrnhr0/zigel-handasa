@@ -14,7 +14,7 @@ def morningWebhookClientView(request):
 @csrf_exempt
 @api_view(["POST"])
 def morningWebhookDocumentView(request):
-    from accounting.models import FINANCIAL_DOC_TYPES, AccountingDocPriceProposal
+    from accounting.models import FINANCIAL_DOC_TYPES, AccountingDocPriceProposal,AccountingDocReceipt,AccountingDoc,AccountingDocRelation
     from client.models import Client
     from awaiting_projects.models import AwaitingProject
     from datetime import datetime, timedelta
@@ -52,8 +52,38 @@ def morningWebhookDocumentView(request):
                 price_proposal.root_price_proposals.add(price_proposal) # add self to root price proposals so serializer will work doc.root_price_proposals.all()__root_project__name
 
                 price_proposal.save()
+    #{'id': '8292f9c1-0681-421c-a...3f7775b021', 'type': 400, 'number': 80011, 'currency': 'ILS', 'date': '2023-09-12', 'createdAt': 1695018103000, 'subtotal': 0, 'rounding': False, 'tax': [{...}], 'total': 2000, 'description': 'פרויקט 1', 'remarks': 'קבלה עבור חשבונית מס 50038', 'reverseCharge': False, 'recipient': {'id': '7a71026d-ca7a-46d1-9...52f6a9daba', 'name': 'לקוח מספר 1', 'department': '', 'address': '', 'city': '', 'zip': '', 'country': 'IL', 'phone': '', 'mobile': '', ...}, ...}
+    elif(request.data['type'] == 400):
+        client_morning_id =request.data['recipient'].get('id', None)
+        client = None
+        if client_morning_id:
+            client,client_created = Client.objects.get_or_create(morning_id=client_morning_id)
+        if client:
+            # we need to get or create the receipt
+            receipt, receipt_created = AccountingDocReceipt.objects.get_or_create(morning_id=request.data['id'],
+                                                                                                      defaults={
+                                                                                                          'client':client,
+                                                                                                          'active':False,
+                                                                                                          'doc_number':request.data['number'],
+                                                                                                          'type':request.data['type'],
+                                                                                                          'total':request.data['total'],
+                                                                                                          'api_data':request.data})
 
-    
+            if receipt_created:
+                linked_docs = MorningAPI().get_linked_docs(request.data['id'])
+                if linked_docs.ok == True:
+                    linked_docs = linked_docs.json()
+                    print(linked_docs)
+                    total_per_child = receipt.total_before_tax / len(linked_docs)
+                    for doc in linked_docs:
+                        doc_id = doc['id']
+                        doc = AccountingDoc.objects.filter(morning_id=doc_id).first()
+                        if doc:
+                            rel = AccountingDocRelation.objects.create(parent=doc,child=receipt, total=total_per_child)
+                            rel.save()
+                receipt.active = True
+                receipt.save()
+
     return HttpResponse('ok', status=200)
 
 
