@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'rejectedProject',
     'accounting',
     'base_project', # this is the base project, it is abstract and should not be used directly
+    'done_projects',
 ]
 
 MIDDLEWARE = [

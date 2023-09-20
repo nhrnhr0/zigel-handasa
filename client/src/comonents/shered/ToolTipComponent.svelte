@@ -14,7 +14,9 @@
 	on:click={(event) => {
 		if (active) {
 			mouse_x = event.clientX;
-			mouse_y = event.clientY + 18;
+			// mouse_y = event.clientY + 35;
+			// mouse_y = end of the button
+			mouse_y = event.target.offsetHeight + event.target.top;
 			is_show = !is_show;
 		}
 	}}

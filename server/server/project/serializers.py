@@ -16,7 +16,7 @@ class ProjectSerializer(ModelSerializer):
         return obj.get_last_comment_text()
     class Meta:
         model = Project
-        fields = ('id', 'name','total_invoices_before_tax','client__name','last_comment','created_at','updated_at','total','total_before_tax','status__name','order_number','doc_number')
+        fields = ('id', 'name','total_invoices_before_tax','client__name','last_comment','created_at','updated_at','total','total_before_tax','status__name','order_number','doc_number',)
         
 
 from client.models import Client
@@ -55,4 +55,4 @@ class ProjectDetailSerializer(ModelSerializer):
         return [{'value':status.id,'label':status.name} for status in ProjectStatus.objects.all()]
     class Meta:
         model = Project
-        fields = ('id', 'name','client','created_at','updated_at','status','order_number','client_options','status_options','api_data','comments',)
+        fields = ('id', 'name','client','closed','created_at','updated_at','status','order_number','client_options','status_options','api_data','comments',)

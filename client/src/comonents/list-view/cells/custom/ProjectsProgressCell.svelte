@@ -33,15 +33,17 @@
   <div class="progress-bar" style="width: 25%"></div>
 </div>
     -->
-<div class="tooltip-wraper" {title} use:tooltip style="width:100%;">
-	<div class="progress" role="progressbar" style="width: 100%;">
-		<div class="progress-bar" style="width: {total_progress}%">
-			{(
-				(parseInt(data.row.total_invoices_before_tax) / parseInt(data.row.total_before_tax)) *
-				100
-			).toFixed(0)}%
-			<!-- <CurrencyCell data={parseInt(data.row.total_invoices_before_tax)} /> -->
+<td>
+	<div class="tooltip-wraper" {title} use:tooltip style="width:100%;">
+		<div class="progress" role="progressbar" style="width: 100%;">
+			<div class="progress-bar" style="width: {total_progress}%">
+				{(
+					(parseInt(data.row.total_invoices_before_tax) / parseInt(data.row.total_before_tax)) *
+					100
+				).toFixed(0)}%
+				<!-- <CurrencyCell data={parseInt(data.row.total_invoices_before_tax)} /> -->
+			</div>
 		</div>
 	</div>
-</div>
+</td>
 <!-- <div id="progress-bar-{data.row.id}" style="width: 100%;" use:tooltip {title} /> -->

@@ -2,7 +2,7 @@
 	export let data;
 
 	function go_to_project() {
-		window.location.href = `/projects/${data.row.id}`;
+		window.location.href = `/done-projects/${data.row.id}`;
 	}
 </script>
 

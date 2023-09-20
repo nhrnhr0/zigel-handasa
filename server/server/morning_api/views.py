@@ -70,6 +70,7 @@ def morningWebhookDocumentView(request):
                                                                                                           'api_data':request.data})
 
             if receipt_created:
+                root_price_proposals = []
                 linked_docs = MorningAPI().get_linked_docs(request.data['id'])
                 if linked_docs.ok == True:
                     linked_docs = linked_docs.json()
@@ -80,8 +81,10 @@ def morningWebhookDocumentView(request):
                         doc = AccountingDoc.objects.filter(morning_id=doc_id).first()
                         if doc:
                             rel = AccountingDocRelation.objects.create(parent=doc,child=receipt, total=total_per_child)
+                            root_price_proposals.extend(doc.root_price_proposals.all())
                             rel.save()
                 receipt.active = True
+                receipt.root_price_proposals.set(root_price_proposals)
                 receipt.save()
 
     return HttpResponse('ok', status=200)

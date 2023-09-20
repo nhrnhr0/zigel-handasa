@@ -2,4 +2,4 @@
 	export let data;
 </script>
 
-test compontnt
+<td> test compontnt </td>

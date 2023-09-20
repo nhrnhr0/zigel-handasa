@@ -17,13 +17,21 @@
 		{
 			name: 'כספים',
 			url: '/accounting'
+		},
+		{
+			name: 'דוח תזרים חיובי',
+			url: '/positive-cash-flow'
+		},
+		{
+			name: 'פרויקטים גמורים',
+			url: '/done-projects'
 		}
 	];
 </script>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
 	<div class="container-fluid">
-		<a class="navbar-brand" href="#">PMS</a>
+		<a class="navbar-brand" href="/">PMS</a>
 		<button
 			class="navbar-toggler"
 			type="button"

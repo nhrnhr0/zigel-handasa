@@ -23,48 +23,49 @@
 	}
 </script>
 
-<ul class="list-inline m-0">
-	<li class="list-inline-item">
-		<!-- edit -->
+<td>
+	<ul class="list-inline m-0">
+		<li class="list-inline-item">
+			<!-- edit -->
 
-		<button
-			on:click={go_to_project}
-			class="btn btn-secondary btn-sm rounded-0"
-			type="button"
-			data-toggle="tooltip"
-			data-placement="top"
-			title="Edit"><i class="fa fa-edit" /></button
-		>
+			<button
+				on:click={go_to_project}
+				class="btn btn-secondary btn-sm rounded-0"
+				type="button"
+				data-toggle="tooltip"
+				data-placement="top"
+				title="Edit"><i class="fa fa-edit" /></button
+			>
 
-		<!-- reject -->
-		<button
-			on:click={handleRejectClick}
-			class="btn btn-danger btn-sm rounded-0"
-			type="button"
-			data-toggle="tooltip"
-			data-placement="top"
-			title="Reject"><i class="fa fa-times" /></button
-		>
+			<!-- reject -->
+			<button
+				on:click={handleRejectClick}
+				class="btn btn-danger btn-sm rounded-0"
+				type="button"
+				data-toggle="tooltip"
+				data-placement="top"
+				title="Reject"><i class="fa fa-times" /></button
+			>
 
-		<!-- approve -->
-		<button
-			on:click={handleApproveClick}
-			class="btn btn-success btn-sm rounded-0"
-			type="button"
-			data-toggle="tooltip"
-			data-placement="top"
-			title="Approve"><i class="fa fa-check" /></button
-		>
-		<button
-			on:click={handleSnoozeClick}
-			class="btn btn-secondary btn-sm rounded-0"
-			type="button"
-			data-toggle="tooltip"
-			data-placement="top"
-			title="Snooze"><i class="fa fa-clock-o" /></button
-		>
-	</li>
-	<!-- <li class="list-inline-item">
+			<!-- approve -->
+			<button
+				on:click={handleApproveClick}
+				class="btn btn-success btn-sm rounded-0"
+				type="button"
+				data-toggle="tooltip"
+				data-placement="top"
+				title="Approve"><i class="fa fa-check" /></button
+			>
+			<button
+				on:click={handleSnoozeClick}
+				class="btn btn-secondary btn-sm rounded-0"
+				type="button"
+				data-toggle="tooltip"
+				data-placement="top"
+				title="Snooze"><i class="fa fa-clock-o" /></button
+			>
+		</li>
+		<!-- <li class="list-inline-item">
 		<button
 			class="btn btn-danger btn-sm rounded-0"
 			type="button"
@@ -73,7 +74,8 @@
 			title="Delete"><i class="fa fa-trash" /></button
 		>
 	</li> -->
-</ul>
+	</ul>
+</td>
 
 <style lang="scss">
 	ul.list-inline {

@@ -29,6 +29,8 @@ from project.views import ProjectRetriveUpdateView,get_project_accounting_docs
 from rejectedProject.views import RejectedProjectListView,rejectedProjectsAPIDescription
 from accounting.views import AccountingDocListView,accountingDocsAPIDescription,get_accounting_docs_morning_info,create_invoice_from_price_proposals
 from accounting.views import get_related_accouting_docs
+from positiveCashFlow.views import PositiveCashFlowInvoiceView,PositiveCashFlowProjectView
+from done_projects.views import DoneProjectListView,doneProjectsAPIDescription
 urlpatterns = [
     path("__debug__/", include("debug_toolbar.urls")),
     path('admin/', admin.site.urls),
@@ -50,6 +52,10 @@ urlpatterns = [
     path('projects/', ProjectListView.as_view()),
     path('projects-description/', projectsAPIDescription),
     
+    # done projects
+    path('done-projects/', DoneProjectListView.as_view()),
+    path('done-projects-description/', doneProjectsAPIDescription),
+    
     path('projects/<int:pk>/', ProjectRetriveUpdateView.as_view()),
     path('projects/<int:pk>/accounting-docs/', get_project_accounting_docs),
     
@@ -67,6 +73,10 @@ urlpatterns = [
     path('accounting-docs-morning-info/', get_accounting_docs_morning_info), # used to create invoice from price proposals
     
     path('create-invoice/', create_invoice_from_price_proposals),
+    
+    # possitive cash flow
+    path('positive-cash-flow-invoice/',PositiveCashFlowInvoiceView.as_view()),
+    path('positive-cash-flow-project/',PositiveCashFlowProjectView.as_view()),
     
     
     # morning-webhook
