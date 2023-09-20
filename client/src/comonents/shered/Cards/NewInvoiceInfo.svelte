@@ -12,9 +12,25 @@
 
 	export function create_invoice() {
 		updateing = true;
+		debugger;
 		console.log('form_data', form_data);
 		console.log('client_data', client_data);
-		network_create_invoice_from_price_proposals(form_data);
+		network_create_invoice_from_price_proposals(form_data).then((res) => {
+			res.json().then((data) => {
+				console.log('data', data);
+				updateing = false;
+				if (data?.error) {
+					// addNotification({
+					// 	position: 'bottom-right',
+					// 	type: 'error',
+					// 	text: data.error,
+					// 	removeAfter: 5000
+					// });
+				} else {
+					alert('המסמך נוצר בהצלחה');
+				}
+			});
+		});
 	}
 </script>
 
@@ -52,7 +68,7 @@
 							enableTime: false,
 							defaultDate: form_data.date
 						}}
-						bind:value={form_data.date}
+						bind:formattedValue={form_data.date}
 					/>
 				</div>
 				<div class="col-3">
@@ -74,7 +90,7 @@
 							enableTime: false,
 							defaultDate: form_data.dueDate
 						}}
-						bind:value={form_data.dueDate}
+						bind:formattedValue={form_data.dueDate}
 					/>
 				</div>
 			</div>

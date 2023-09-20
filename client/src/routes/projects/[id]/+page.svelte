@@ -40,6 +40,7 @@
 		if (JSON.stringify(form_data) != JSON.stringify(original_data)) {
 			if (confirm('האם ברצונך לשמור את השינויים?')) {
 				// save the changes
+				debugger;
 				const res = await update_project(form_data.id, form_data);
 				if (res.status == 200) {
 					return true;

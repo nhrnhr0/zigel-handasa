@@ -130,8 +130,10 @@ def create_invoice_from_price_proposals(request):
     subtotal = request.data.get('subtotal')
     total = request.data.get('total')
     # convert date to morning format:   "date": "2017-10-03",
-    date = MorningAPI().convert_django_date_to_morning_date(date)
-    due_date = MorningAPI().convert_django_date_to_morning_date(due_date)
+    # 2023/09/20
+    date = MorningAPI().convert_django_date_to_morning_date(date, format='%Y/%m/%d')
+    due_date = MorningAPI().convert_django_date_to_morning_date(due_date, format='%Y/%m/%d')
+    
     
 
     response = MorningAPI().create_invoice_from_price_proposals(clientDict, date, due_date, income, remarks, fotter, emailContent,description,discount)

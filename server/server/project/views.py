@@ -44,7 +44,6 @@ from client.models import Client
 @api_view(['GET'])
 def projectsAPIDescription(request):
     pass
-    list_view = ProjectListView
     clients_select = ClientSelectSerializer(Client.objects.all(),many=True).data
     status_select = ProjectStatusSelectSerializer(ProjectStatus.objects.all(),many=True).data
     # clients_select = ClientSelectSerializer(Client.objects.all(),many=True).data

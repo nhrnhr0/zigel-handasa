@@ -3,7 +3,8 @@ import requests
 import json
 import datetime
 import os
-
+from django.utils import timezone
+import pytz
 def test(request):
     from django.http import JsonResponse
 
@@ -70,9 +71,14 @@ class MorningAPI(metaclass=SingletonMeta):
         response = self.make_request(url, method='POST', data=json.dumps(data))
         return response
         pass
-    def convert_django_date_to_morning_date(self, date):
-        date = datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ')
-        return date.strftime('%Y-%m-%d')
+    def convert_django_date_to_morning_date(self, date, format='%Y-%m-%dT%H:%M:%S.%fZ'):
+        date = datetime.datetime.strptime(date, format)
+        # set timezone Israel/Jerusalem timezone
+        date = date.replace(tzinfo=pytz.timezone('Asia/Jerusalem'))
+        # convert to morning format
+        date = date.strftime('%Y-%m-%d')
+        return date
+        pass
     
     def make_request(self, url, method='GET', data=None, include_auth=True):
         print('making request', method, ' to ', url)

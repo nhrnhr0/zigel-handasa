@@ -48,6 +48,15 @@ def morningWebhookDocumentView(request):
                 alert_date = datetime.strptime(alert, '%Y-%m-%d')
                 alert_date = alert_date.date() + timedelta(days=7)
                 
+                # conver alert_date to datetime object
+                alert_date = datetime.combine(alert_date, datetime.min.time())
+                
+                # set timezone to Asia/Jerusalem
+                from django.utils.timezone import make_aware
+                import pytz
+                alert_date = make_aware(alert_date, timezone=pytz.timezone("Israel/Jerusalem"))
+                
+                
                 awaiting_project = AwaitingProject.objects.create(name=request.data['description'],root_price_proposal=price_proposal,alert_date=alert_date)
                 price_proposal.root_price_proposals.add(price_proposal) # add self to root price proposals so serializer will work doc.root_price_proposals.all()__root_project__name
 
