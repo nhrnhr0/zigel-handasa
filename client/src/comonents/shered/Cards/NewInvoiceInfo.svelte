@@ -4,6 +4,7 @@
 	import { network_create_invoice_from_price_proposals } from '$lib/network.js';
 	import { onMount } from 'svelte';
 	import Flatpickr from '../flatpicker/Flatpickr.svelte';
+	import { notifier } from '@beyonk/svelte-notifications';
 
 	let updateing = false;
 
@@ -26,6 +27,10 @@
 					// 	text: data.error,
 					// 	removeAfter: 5000
 					// });
+					notifier.danger(data.error, {
+						timeout: 5000, // milliseconds
+						persist: false // automatic timeout (ignores above)
+					});
 				} else {
 					alert('המסמך נוצר בהצלחה');
 				}

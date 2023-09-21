@@ -54,9 +54,28 @@ def morningWebhookDocumentView(request):
                 # set timezone to Asia/Jerusalem
                 from django.utils.timezone import make_aware
                 import pytz
-                alert_date = make_aware(alert_date, timezone=pytz.timezone("Israel/Jerusalem"))
+                alert_date = make_aware(alert_date, timezone=pytz.timezone("Asia/Jerusalem"))
                 
                 
+                # if price_proposal_created and api_data has no 'discount' object, we add it
+                # "discount": {
+                #     "total": "0.00",
+                #     "type": "amount",
+                #     "value": ""
+                # },
+                if not price_proposal.api_data.get('discount'):
+                    price_proposal.api_data['discount'] = {
+                        "total": "0.00",
+                        "type": "amount",
+                        "value": ""
+                    }
+                    
+                # set "tax": [{total: convert to string}] with 2 decimals
+                # and api_data.total to string with 2 decimals
+                x = float(price_proposal.api_data['tax'][0]['total'])
+                price_proposal.api_data['tax'][0]['total'] = f"{x:.2f}"
+                x = float(price_proposal.api_data['total'])
+                price_proposal.api_data['total'] = f"{x:.2f}"
                 awaiting_project = AwaitingProject.objects.create(name=request.data['description'],root_price_proposal=price_proposal,alert_date=alert_date)
                 price_proposal.root_price_proposals.add(price_proposal) # add self to root price proposals so serializer will work doc.root_price_proposals.all()__root_project__name
 
