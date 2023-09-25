@@ -66,12 +66,6 @@
 		>
 			<div slot="expended-row-content" let:row let:row_index let:show>
 				<div class="expended-content">
-					<!-- תאריך
-					מספר מסמך (קישור לטבלת קישורים ליד)
-				סוג
-			סכום
-		סה"כ פתוח
-	ת לתשלום -->
 					<table class="table table-bordered">
 						<thead>
 							<tr>
@@ -131,8 +125,8 @@
 						</tbody>
 					</table>
 				</div>
-			</div></TableDataPanel
-		>
+			</div>
+		</TableDataPanel>
 	</div>
 </div>
 

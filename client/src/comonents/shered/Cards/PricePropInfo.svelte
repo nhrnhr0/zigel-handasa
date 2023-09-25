@@ -35,6 +35,7 @@
 					name="documentDate"
 					placeholder="בחרו תאריך"
 					bind:value={form_data.api_data.date}
+					disabled
 				/>
 			</div>
 		</div>

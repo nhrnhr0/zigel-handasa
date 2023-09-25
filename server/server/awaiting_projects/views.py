@@ -4,6 +4,7 @@ from rest_framework import generics, permissions
 from rest_framework import generics
 
 from rejectedProject.models import RejectedReason
+from morning_api.api import MorningAPI
 from .models import AwaitingProject
 from .serializers import AwaitingProjectSerializer
 import django_filters.rest_framework
@@ -165,6 +166,7 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from project.models import Project
 from rest_framework.decorators import api_view
+from morning_api.api import MorningAPI
 
 class AwaitingProjectRetriveUpdateView(APIView):
     class_serializer = AwaitingProjectDetailSerializer
@@ -186,12 +188,35 @@ class AwaitingProjectRetriveUpdateView(APIView):
             
             saved_obj.root_price_proposal.total = request.data['api_data']['total']
             saved_obj.root_price_proposal.api_data = request.data['api_data']
+            saved_obj.root_price_proposal.api_data['description'] = request.data['name']
             saved_obj.root_price_proposal.save()
             saved_obj.comments = request.data['comments']
+            
             saved_obj.save()
+            
+            if request.data.get('submit_for_approval'):
+                # send price proposal from morning
+                resp = MorningAPI().send_price_proposal_from_awaiting_project(saved_obj)
+                if resp.ok:
+                    new_data = resp.json()
+                    saved_obj.root_price_proposal.doc_number = new_data['number']
+                    saved_obj.root_price_proposal.morning_id = new_data['id']
+                    try:
+                        saved_obj.root_price_proposal.save()
+                    except Exception as e:
+                        print(e)
+                        # if django.db.utils.IntegrityError: UNIQUE constraint failed: accounting_accountingdoc.morning_id
+                        # we delete the price proposal and save again
+                        if 'UNIQUE constraint failed: accounting_accountingdoc.morning_id' in str(e):
+                            from accounting.models import AccountingDocPriceProposal
+                            AccountingDocPriceProposal.objects.filter(morning_id=new_data['id']).delete()
+                            saved_obj.root_price_proposal.save()
+                        
+                else:
+                    return Response({'error':resp.text}, status=status.HTTP_400_BAD_REQUEST)
             return Response(serializer.data, status=status.HTTP_200_OK)
         print(serializer.errors)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error':serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])

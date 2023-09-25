@@ -21,7 +21,9 @@
 		parseInt(data.row.total_before_tax) - parseInt(data.row.total_invoices_before_tax);
 	let current_total = parseInt(data.row.total_invoices_before_tax);
 	let total = parseInt(data.row.total_before_tax);
-	let title = `${intl.format(current_total)} מתוך ${intl.format(total)}`;
+	let title = `${intl.format(current_total)} מתוך ${intl.format(total)} <br/> (יתרה: ${intl.format(
+		open_total
+	)})`;
 
 	let total_progress =
 		(parseInt(data.row.total_invoices_before_tax) / parseInt(data.row.total_before_tax)) * 100;

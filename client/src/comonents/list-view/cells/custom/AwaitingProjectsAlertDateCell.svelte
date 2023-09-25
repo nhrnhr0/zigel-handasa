@@ -1,5 +1,6 @@
 <script>
-	import HebrewDateCell from '../HebrewDateCell.svelte';
+	// import HebrewDateCell from '../HebrewDateCell.svelte';
+	import { get_hebrew_date } from '$lib/utils.js';
 	// import HebrewDatetimeCell from '../HebrewDatetimeCell.svelte';
 
 	export let data;
@@ -23,7 +24,8 @@
 	{#if data}
 		<!-- {JSON.stringify(data)} -->
 		<div class="wraper" class:overdue>
-			<HebrewDateCell data={data.row[data.field_key]} />
+			<!-- <HebrewDateCell data={data.row[data.field_key]} /> -->
+			{get_hebrew_date(data.row[data.field_key])}
 			{#if overdue}
 				<svg
 					fill="#ffffff"

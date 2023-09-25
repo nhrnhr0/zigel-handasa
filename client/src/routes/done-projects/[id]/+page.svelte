@@ -1,11 +1,13 @@
 <script>
 	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
 	import { network_update_project } from '$lib/network.js';
 	import EditProject from '../../../comonents/EditProject.svelte';
 	// export let data;
 	import { beforeNavigate } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { API_PROJECTS } from '$lib/consts';
+	import { notifier } from '@beyonk/svelte-notifications';
 
 	let form_data = undefined;
 	let original_data = undefined;
@@ -25,9 +27,15 @@
 		const res = await network_update_project(project_id, p_data);
 		console.log('res: ', res);
 		if (res.status == 200) {
-			alert('הפרויקט עודכן בהצלחה');
+			// alert('הפרויקט עודכן בהצלחה');
+			notifier.success('הפרויקט עודכן בהצלחה', {
+				// position: 'bottom-right',
+				timeout: 3000
+			});
 			form_data = JSON.parse(JSON.stringify(p_data));
 			original_data = JSON.parse(JSON.stringify(p_data));
+
+			goto(`/done-projects/`);
 		}
 		return res;
 	}

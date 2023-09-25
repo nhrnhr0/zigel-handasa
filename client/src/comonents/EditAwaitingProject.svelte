@@ -5,6 +5,7 @@
 	import ModalApprove from '../modals/awaiting-approval/ModalApprove.svelte';
 	import ModalReject from '../modals/awaiting-approval/ModalReject.svelte';
 	import { openModal } from 'svelte-modals';
+	import Flatpickr from './shered/flatpicker/Flatpickr.svelte';
 	export let form_data;
 	export let on_update_function;
 	let activeTabId;
@@ -13,7 +14,11 @@
 	function save_form_data(e) {
 		e.preventDefault();
 		updateing = true;
-		on_update_function(form_data.id, form_data).then((res) => {
+		let ret_url = '/waiting-approval/';
+		if (e.target.value == 'saveAndContinue') {
+			ret_url += form_data.id;
+		}
+		on_update_function(form_data.id, form_data, ret_url).then((res) => {
 			updateing = false;
 		});
 	}
@@ -48,13 +53,24 @@
 					<div class="row">
 						<div class="col">
 							<label for="alert_date">תאריך התראה</label>
-							<input
+							<!-- <input
 								class="form-control"
 								type="datetime-local"
 								id="alert_date"
 								name="alert_date"
 								placeholder="בחרו תאריך"
 								bind:value={form_data.alert_date}
+							/> -->
+							<Flatpickr
+								bind:value={form_data.alert_date}
+								options={{
+									enableTime: true,
+									dateFormat: 'd/m/Y H:i',
+									altInput: true,
+									altFormat: 'd/m/Y H:i',
+									time_24hr: true,
+									locale: 'he'
+								}}
 							/>
 							<small>
 								צריך ליצור קשר עם הלקוח בעוד: {Math.floor(
@@ -103,14 +119,20 @@
 					type="submit"
 					on:click={save_form_data}
 					disabled={updateing}
+					value="save"
 				>
-					{#if updateing}
-						<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" />
-						<span class="sr-only">Loading...</span>
-					{:else}
-						שמור
-					{/if}</button
+					שמור
+				</button>
+
+				<button
+					class="btn btn-primary"
+					type="submit"
+					on:click={save_form_data}
+					value="saveAndContinue"
+					disabled={updateing}
 				>
+					שמור והמשך עריכה
+				</button>
 			</div>
 		</div>
 	</form>

@@ -1,11 +1,13 @@
 <script>
 	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
 	import { network_update_awaiting_project } from '$lib/network.js';
 	import EditAwaitingProject from '../../../comonents/EditAwaitingProject.svelte';
 	// export let data;
 	import { beforeNavigate } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { API_AWAITING_PROJECTS } from '$lib/consts';
+	import { notifier } from '@beyonk/svelte-notifications';
 
 	let form_data = undefined;
 	let original_data = undefined;
@@ -19,13 +21,32 @@
 		form_data = JSON.parse(JSON.stringify(data));
 	});
 
-	async function update_project(project_id, p_data) {
+	function project_total_changed(new_data) {
+		let ret = original_data.api_data.total != form_data.api_data.total;
+		return ret;
+	}
+
+	async function update_project(project_id, p_data, ret_url) {
+		debugger;
+		if (project_total_changed()) {
+			let res = confirm('הסכום השתנה, האם ברצונך להפיק הצעת מחיר חדשה ללקוח?');
+			if (res) {
+				p_data.submit_for_approval = true;
+			}
+		}
 		const res = await network_update_awaiting_project(project_id, p_data);
 		console.log('res: ', res);
 		if (res.status == 200) {
-			alert('הפרויקט עודכן בהצלחה');
+			notifier.success('הפרויקט עודכן בהצלחה', {
+				// position: 'bottom-right',
+				timeout: 3000
+			});
 			form_data = JSON.parse(JSON.stringify(p_data));
 			original_data = JSON.parse(JSON.stringify(p_data));
+			debugger;
+			if (ret_url && ret_url != $page.url.pathname) {
+				goto(ret_url);
+			}
 		}
 		return res;
 	}
@@ -36,7 +57,7 @@
 	// if he doesn't we just navigate to the new page
 	beforeNavigate(async ({ to, cancel }) => {
 		if (JSON.stringify(form_data) != JSON.stringify(original_data)) {
-			if (confirm('האם ברצונך לשמור את השינויים?')) {
+			if (confirm('האם ברצונך לשמור את השינויים לפי יציאה מהעמוד?')) {
 				// save the changes
 				const res = await update_project(form_data.id, form_data);
 				if (res.status == 200) {
