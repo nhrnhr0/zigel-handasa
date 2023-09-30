@@ -29,6 +29,10 @@ from project.views import ProjectRetriveUpdateView,get_project_accounting_docs
 from rejectedProject.views import RejectedProjectListView,rejectedProjectsAPIDescription
 from accounting.views import AccountingDocListView,accountingDocsAPIDescription,get_accounting_docs_morning_info,create_invoice_from_price_proposals
 from accounting.views import get_related_accouting_docs
+from file_upload.views import get_files
+from file_upload.views import add_new_file
+from django.conf import settings
+from django.conf.urls.static import static
 urlpatterns = [
     path("__debug__/", include("debug_toolbar.urls")),
     path('admin/', admin.site.urls),
@@ -75,5 +79,14 @@ urlpatterns = [
     path('morning-webkook/document/', morningWebhookDocumentView),
     
     
-    path('test/', test)
+    path('test/', test),
+
+    path('files_upload/new',add_new_file),
+    path('files_upload/get/<int:project_id>',get_files),
 ]
+
+if settings.DEBUG:
+    urlpatterns = urlpatterns + \
+        static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns = urlpatterns + \
+        static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

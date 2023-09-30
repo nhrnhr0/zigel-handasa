@@ -1,11 +1,11 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	const PAGE_LABELS = {
 		'waiting-approval': 'פרויקטים ממתינים לאישור',
 		projects: 'פרויקטים',
 		'rejected-project': 'פרויקטים דחויים',
 		accounting: 'כספים'
 	};
-	import { page } from '$app/stores';
 
 	let crumbs: Array<{ label: string; href: string }> = [];
 

@@ -1,5 +1,6 @@
 <script>
 	import { page } from '$app/stores';
+	console.log($page.data.nav_data);
 </script>
 
 <!-- display boxes with the navigation links -->

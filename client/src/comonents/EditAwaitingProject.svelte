@@ -5,6 +5,7 @@
 	import ModalApprove from '../modals/awaiting-approval/ModalApprove.svelte';
 	import ModalReject from '../modals/awaiting-approval/ModalReject.svelte';
 	import { openModal } from 'svelte-modals';
+	import UploadFiles from '../routes/upload-fiels/+page.svelte'
 	export let form_data;
 	export let on_update_function;
 	let activeTabId;
@@ -89,6 +90,7 @@
 					<div class="row">
 						<div class="col">
 							<!-- files -->
+							<UploadFiles project_id={form_data.id}/>
 						</div>
 					</div>
 				</div>

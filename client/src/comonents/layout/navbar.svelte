@@ -17,6 +17,10 @@
 		{
 			name: 'כספים',
 			url: '/accounting'
+		},
+		{
+			name:'הוסף קבצים',
+			url:'/upload-fiels'
 		}
 	];
 </script>

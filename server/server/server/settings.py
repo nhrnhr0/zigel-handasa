@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'rejectedProject',
     'accounting',
     'base_project', # this is the base project, it is abstract and should not be used directly
+    'file_upload',
 ]
 
 MIDDLEWARE = [
@@ -164,15 +165,16 @@ REST_FRAMEWORK = {
 
 # CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_ALLOW_ALL = True # for development only
-
 CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     'https://testing.boost-pop.com',
+    "http://localhost:3005"
 ]
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:5173",
     'https://testing.boost-pop.com',
+    "http://localhost:3005"
 ]
 
 CORS_ALLOW_METHODS = [
@@ -207,6 +209,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static_cdn"),
 ]
 MEDIA_URL = '/media/'
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_ROOT = os.path.join(STATIC_ROOT, 'media_root/')
 
 # python shell script to add MOCK_DATA.json to database
