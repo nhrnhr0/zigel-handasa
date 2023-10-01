@@ -1,6 +1,9 @@
 <script>
     export let file
     export let SERVERPATH
+    export let  project_id
+    import {createEventDispatcher} from 'svelte'
+    const dispatch =createEventDispatcher();
  async function getFile(file_url) {
   const url = file_url;
   const fileLink = document.createElement('a');
@@ -13,19 +16,21 @@
 async function delteFile(file){
     const fileData= new FormData()
     fileData.append("fileId",file.id)
-    const response = await fetch(SERVERPATH+'/files_upload/new', {
+    fileData.append("projectId",project_id)
+    const response = await fetch(SERVERPATH+'/files_upload/delete', {
       method: 'POST',
       
       body:fileData
      }) .then((response) => response.json())
     .then((data) => {
       // we are setting the names to the names variable
-      files = data;
+      dispatch('updatedData',data)
     });
 }
+
 </script>
 <div>
-    <button>
+    <button on:click={downloadFile(file)}>
         הורד
     </button>
     <button on:click={delteFile(file)}>
@@ -34,6 +39,7 @@ async function delteFile(file){
     <button on:click={getFile(SERVERPATH+file.file)}>
         צפה
     </button>
+    <a href={SERVERPATH+file.file} alt={file.file_name} download={file.file_name}>{file.file_name}</a>
 </div>
 <style>
 

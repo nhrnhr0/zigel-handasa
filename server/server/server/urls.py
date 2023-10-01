@@ -31,6 +31,7 @@ from accounting.views import AccountingDocListView,accountingDocsAPIDescription,
 from accounting.views import get_related_accouting_docs
 from file_upload.views import get_files
 from file_upload.views import add_new_file
+from file_upload.views import delete_file
 from django.conf import settings
 from django.conf.urls.static import static
 urlpatterns = [
@@ -83,6 +84,7 @@ urlpatterns = [
 
     path('files_upload/new',add_new_file),
     path('files_upload/get/<int:project_id>',get_files),
+    path('files_upload/delete',delete_file)
 ]
 
 if settings.DEBUG:

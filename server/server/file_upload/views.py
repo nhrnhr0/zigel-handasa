@@ -53,13 +53,22 @@ def add_new_file(request):
     project.files.add(new_file)
     project.save()
     queryset = project.files.all()
-    print(queryset)
+    # print(queryset)
     serializer_class = MyModelSerializer(queryset, many=True)
-    print(serializer_class.data)
+    # print(serializer_class.data)
     return JsonResponse(serializer_class.data,safe=False)
+
 @api_view(['POST'])
 def delete_file(request):
     file_id=request.POST['fileId']
+    project_id=request.POST['projectId']
+    delete_file=FileUpload.objects.get(pk=file_id) 
+    delete_file.delete()
+    files=BaseProject.objects.get(pk=project_id)
+    queryset=files.files.all()
+    serializer=MyModelSerializer(queryset,many=True)
+    return JsonResponse(serializer.data,safe=False)
+
 
 
 # @api_view(['POST'])

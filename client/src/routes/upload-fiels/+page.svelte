@@ -5,6 +5,7 @@
   let file;
   const SERVERPATH="http://127.0.0.1:8000"
   export let project_id 
+
   async function uploadFile() {
     const fileData= new FormData()
     fileData.append("file",file[0])
@@ -23,15 +24,6 @@
     
   }
  
-
-
-//    onMount( () => {
-//       fetch(SERVERPATH+"/files_upload/get/"+project_id)
-//     .then((response) => response.json())
-//     .then((data) => {
-//       files = data;
-//     });
-// });
 onMount(async () => {
     try {
       
@@ -47,21 +39,22 @@ onMount(async () => {
     }
   });
 
-function makeDownload(){
-  
+
+function getDataFromEdit(data){
+  files=data.detail;
 }
 </script>
 <div id="main-container">
 
   <!-- {console.log(files)}
   {console.log(project_id)} -->
-  {#if files}
-    {#each files as file}
+  {#if files }
+    {#each files as file } 
     {#if file.file_name.includes("png")||file.file_name.includes("jpg")}
     <div id="img-container">
       <!-- {console.log(file)} -->
       <img   id="image" src={SERVERPATH+file.file} alt={file.file_name}>
-      <EditComponent file={file} SERVERPATH={SERVERPATH}/>
+      <EditComponent file={file} SERVERPATH={SERVERPATH} project_id={project_id} on:updatedData={getDataFromEdit}/>
     </div>
     {:else if file.file_name.includes("pdf")}
    
@@ -80,7 +73,7 @@ function makeDownload(){
 
 <form on:submit|preventDefault={uploadFile}>
   <input type="file" bind:files={file} />
-  <button type="submit">Upload</button>
+  <button type="submit">הוסף</button>
 </form>
 
 <style>
