@@ -5,7 +5,7 @@
 	import ModalApprove from '../modals/awaiting-approval/ModalApprove.svelte';
 	import ModalReject from '../modals/awaiting-approval/ModalReject.svelte';
 	import { openModal } from 'svelte-modals';
-	import UploadFiles from '../routes/upload-fiels/+page.svelte'
+	import UploadFiles from '../comonents/upload-fiels/+page.svelte'
 	export let form_data;
 	export let on_update_function;
 	let activeTabId;

@@ -44,14 +44,21 @@ def get_files(request,project_id):
 
 @api_view(['POST'])
 def add_new_file(request):
-    file= request.FILES['file']
-    file_name =request.POST['fileName']
     project_id=request.POST['projectId'] 
-    print(project_id)
-    new_file=FileUpload.objects.create(file_name=file_name, file=file)
+    file_list=request.FILES.getlist('files')
+    file_names=request.POST.getlist('fileNames')
     project=BaseProject.objects.get(pk=project_id)
-    project.files.add(new_file)
-    project.save()
+    if(file_list):
+        for i in range(len(file_list)):
+            current_file=FileUpload.objects.create(file_name=file_names[i],file=file_list[i])
+            project.files.add(current_file)
+            project.save()
+    else:
+        file= request.FILES['file']
+        file_name =request.POST['fileName']
+        new_file=FileUpload.objects.create(file_name=file_name, file=file)
+        project.files.add(new_file)
+        project.save()
     queryset = project.files.all()
     # print(queryset)
     serializer_class = MyModelSerializer(queryset, many=True)

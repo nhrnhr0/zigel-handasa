@@ -14,6 +14,8 @@
   document.body.removeChild(fileLink);
 }
 async function delteFile(file){
+    const userCoinfirm =window.confirm("אתה בטוח שתרצה למחוק?")
+    if(userCoinfirm){
     const fileData= new FormData()
     fileData.append("fileId",file.id)
     fileData.append("projectId",project_id)
@@ -26,21 +28,40 @@ async function delteFile(file){
       // we are setting the names to the names variable
       dispatch('updatedData',data)
     });
+    }
 }
 
 </script>
-<div>
-    <button on:click={downloadFile(file)}>
-        הורד
-    </button>
-    <button on:click={delteFile(file)}>
-        מחק
-    </button>
-    <button on:click={getFile(SERVERPATH+file.file)}>
+<div class="button-container">
+    <button class="btn" id="green-btn" on:click={getFile(SERVERPATH+file.file)}>
         צפה
     </button>
-    <a href={SERVERPATH+file.file} alt={file.file_name} download={file.file_name}>{file.file_name}</a>
+    <button class="btn" id="red-btn" on:click={delteFile(file)}>
+        מחק
+    </button>
 </div>
 <style>
-
+    .button-container{
+        width: 200px;
+        height: 40px;
+        display: flex;
+        justify-content: space-between;
+    }
+    .btn{
+        border-radius: 7px;
+        display: flex;
+        justify-content: center;
+        align-items:center ;
+        color: white;
+        width: 70px;
+    }
+    .btn:hover{
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    }
+    #red-btn{
+        background-color:  #f44336;
+    }
+    #green-btn{
+        background-color: #4CAF50;
+    }
 </style>
