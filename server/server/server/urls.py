@@ -27,7 +27,7 @@ from morning_api.views import morningWebhookClientView,morningWebhookDocumentVie
 from morning_api.api import test
 from project.views import ProjectRetriveUpdateView,get_project_accounting_docs
 from rejectedProject.views import RejectedProjectListView,rejectedProjectsAPIDescription
-from accounting.views import AccountingDocListView,accountingDocsAPIDescription,get_accounting_docs_morning_info,create_invoice_from_price_proposals
+from accounting.views import AccountingDocListView,accountingDocsAPIDescription,get_accounting_docs_morning_info,create_invoice_from_price_proposals,create_cancel_invoice_from_invoice
 from accounting.views import get_related_accouting_docs
 from positiveCashFlow.views import PositiveCashFlowInvoiceView,PositiveCashFlowProjectView
 from done_projects.views import DoneProjectListView,doneProjectsAPIDescription
@@ -73,6 +73,7 @@ urlpatterns = [
     path('accounting-docs-morning-info/', get_accounting_docs_morning_info), # used to create invoice from price proposals
     
     path('create-invoice/', create_invoice_from_price_proposals),
+    path('create-cancel-invoice/', create_cancel_invoice_from_invoice),
     
     # possitive cash flow
     path('positive-cash-flow-invoice/',PositiveCashFlowInvoiceView.as_view()),

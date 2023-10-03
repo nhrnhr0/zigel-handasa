@@ -1,24 +1,17 @@
 <script>
 	import { API_DONE_PROJECTS, API_DONE_PROJECTS_DESCRIPTION } from '$lib/consts';
-
-	import ProjectsListView from '../../comonents/list-view/ProjectsListView.svelte';
-	let description_url = API_DONE_PROJECTS_DESCRIPTION;
-	let api_url = API_DONE_PROJECTS;
-</script>
-
-<ProjectsListView {description_url} {api_url} />
-<!-- <script>
-	import { API_DONE_PROJECTS, API_DONE_PROJECTS_DESCRIPTION } from '$lib/consts';
 	import { network_get_project_accounting_docs } from '$lib/network.js';
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
+
 	import TableFilterPanel from '../../comonents/list-view/panels/TableFilterPanel.svelte';
 	import TableDataPanel from '../../comonents/list-view/panels/TableDataPanel.svelte';
 	import CurrencyCell from '../../comonents/list-view/cells/currencyCell.svelte';
 	import HebrewDatetimeCell from '../../comonents/list-view/cells/HebrewDatetimeCell.svelte';
 	import ToolTipComponent from '../../comonents/shered/ToolTipComponent.svelte';
 	import RelatedDocsTable from '../../comonents/layout/RelatedDocsTable.svelte';
-	let description_url = API_DONE_PROJECTS_DESCRIPTION;
-	let api_url = API_DONE_PROJECTS;
+	export let description_url;
+	export let api_url;
 	let description_data = undefined;
 	let api_data = undefined;
 	onMount(async () => {
@@ -44,7 +37,11 @@
 	function calculate_open_total(docs, index) {
 		let total = 0;
 		for (let i = 0; i <= index; i++) {
-			total += parseFloat(docs[i].total);
+			if (docs[i].type == 'חשבונית מס') {
+				total += parseFloat(docs[i].total);
+			} else if (docs[i].type == 'חשבונית זיכוי') {
+				total -= parseFloat(docs[i].total);
+			}
 		}
 		return total;
 	}
@@ -82,12 +79,15 @@
 								<th scope="col">סוג</th>
 								<th scope="col">סכום</th>
 								<th scope="col">סה"כ חשבוניות לפני מע"מ</th>
+								<th scope="col"> פעולות </th>
+								<!-- <th scope="col">תאריך לתשלום</th> -->
 							</tr>
 						</thead>
 						<tbody>
 							{#if slots_data[row.id] != undefined}
 								{#each slots_data[row.id] as doc, index}
 									<tr>
+										<!-- doc_date,doc_number,type,total,'', -->
 										<td>
 											<HebrewDatetimeCell data={doc.doc_date} />
 										</td>
@@ -121,6 +121,22 @@
 										<td
 											><CurrencyCell data={calculate_open_total(slots_data[row.id], index)} />
 										</td>
+										<td>
+											<!-- create cancel invocie -->
+											{#if doc.type == 'חשבונית מס'}
+												<button
+													class="btn btn-danger btn-sm"
+													on:click={() => {
+														// redirect to create cancel invoice page
+														goto(
+															`/accounting/new/cancel-invoice/?linkedDocumentIds=${doc.morning_id}`
+														);
+													}}
+												>
+													ביטול חשבונית
+												</button>
+											{/if}
+										</td>
 									</tr>
 								{/each}
 							{:else}
@@ -147,4 +163,4 @@
 			padding: 0;
 		}
 	}
-</style> -->
+</style>

@@ -1,10 +1,13 @@
 <script>
+	import { convert_to_money } from '$lib/utils.js';
 	// export let form_data;
 	export let items;
 	export let discount;
 	export let subtotal;
 	export let tax;
 	export let total;
+
+	let subtotal_before_discount = 0;
 
 	function calculate_item_total(item) {
 		let total = (item.price / (item.taxIncludedInPrice ? 1.17 : 1)) * item.quantity;
@@ -37,18 +40,18 @@
 		for (const item of items) {
 			_subtotal += calculate_item_total(item);
 		}
-		subtotal = _subtotal;
+
 		if (_subtotal != 0) {
 			if (discount == undefined) {
 				discount = {
-					type: 'amount',
+					type: 'sum',
 					value: '',
 					total: 0
 				};
 			}
 		}
 		if (discount.type && discount.value == undefined && subtotal != 0) {
-			if (discount.type === 'amount') {
+			if (discount.type === 'sum') {
 				discount.value = -1 * discount.total;
 			} else {
 				discount.value = -1 * (discount.total / subtotal) * 100;
@@ -56,17 +59,20 @@
 		}
 		// set discount.total based on the items and discount.value
 		let val = discount.value || 0;
-		if (discount.type === 'amount') {
+		if (discount.type === 'sum') {
 			discount.total = parseFloat(val).toFixed(2);
 		} else {
-			discount.total = parseFloat((val / 100) * subtotal).toFixed(2);
+			discount.total = parseFloat((val / 100) * _subtotal).toFixed(2);
 		}
-
+		// subtotal = _subtotal;
+		debugger;
+		subtotal_before_discount = _subtotal;
+		subtotal = _subtotal - discount.total;
 		// calculate the tax (tax[0].total) = (subtotal - discount.total) * tax[0].rate
-		tax[0].total = ((subtotal - discount.total) * tax[0].rate).toFixed(2);
+		tax[0].total = ((_subtotal - discount.total) * tax[0].rate).toFixed(2);
 
 		// set the total
-		total = (parseFloat(subtotal) - parseFloat(discount.total) + parseFloat(tax[0].total)).toFixed(
+		total = (parseFloat(_subtotal) - parseFloat(discount.total) + parseFloat(tax[0].total)).toFixed(
 			2
 		);
 	}
@@ -142,8 +148,8 @@
 					<td>
 						<select id="secondCurrencyOptions" class="form-control" bind:value={item.currency}>
 							<option value="ILS">שקל ישראלי</option>
-							<option value="US Dollar">דולר אמריקאי</option>
-							<option value="Euro">אירו</option>
+							<!-- <option value="US Dollar">דולר אמריקאי</option>
+							<option value="Euro">אירו</option> -->
 						</select>
 					</td>
 					<td>
@@ -154,7 +160,9 @@
 						</select>
 					</td>
 					<td>
-						<div class="description-value">{calculate_item_total(item).toFixed(2)}</div>
+						<div class="description-value">
+							{convert_to_money(calculate_item_total(item).toFixed(2))}
+						</div>
 					</td>
 					<td>
 						<div class="my-row">
@@ -247,7 +255,7 @@
 					</td>
 					<td>
 						<div class="description-value">
-							{(item.price / (item.taxIncludedInPrice ? 1.17 : 1)).toFixed(2)}
+							{convert_to_money((item.price / (item.taxIncludedInPrice ? 1.17 : 1)).toFixed(2))}
 						</div>
 					</td>
 					<td>
@@ -259,7 +267,9 @@
 						</div>
 					</td>
 					<td>
-						<div class="description-value">{calculate_item_total(item).toFixed(2)}</div>
+						<div class="description-value">
+							{convert_to_money(calculate_item_total(item).toFixed(2))}
+						</div>
 					</td>
 					<td>
 						<div class="my-row">
@@ -345,7 +355,7 @@
 			</td>
 			<td>
 				<div class="description-value" style="font-weight:bold;">
-					{subtotal.toFixed(2)}
+					{convert_to_money(subtotal_before_discount.toFixed(2))}
 				</div>
 			</td>
 			<td />
@@ -357,7 +367,7 @@
 					<div class="my-row">
 						<label for="discount">הנחה</label>
 						<select name="discount" id="discount" class="form-control" bind:value={discount.type}>
-							<option value="amount">סכום</option>
+							<option value="sum">סכום</option>
 							<option value="percentage">%</option>
 						</select>
 					</div>
@@ -374,7 +384,7 @@
 				</td>
 				<td>
 					<div class="description-value" style="font-weight:bold;">
-						({discount.total})
+						({convert_to_money(discount.total)})
 						<!-- {#if form_data.discount.type === 'percentage'}
 											{(subtotal * (form_data.discount.total / 100)).toFixed(2)}
 										{:else if form_data.discount.type === 'amount'}
@@ -390,7 +400,7 @@
 				</td>
 				<td>
 					<div style="font-weight: bold;">
-						{tax[0].total}
+						{convert_to_money(tax[0].total)}
 					</div>
 				</td>
 			</tr>
@@ -411,7 +421,7 @@
 						style="font-weight: bold;
                     "
 					>
-						{total}
+						{convert_to_money(total)}
 					</div>
 				</td>
 			</tr>

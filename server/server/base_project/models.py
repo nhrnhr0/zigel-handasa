@@ -18,3 +18,9 @@ class BaseProject(models.Model):
         if len(self.comments) == 0:
             return ''
         return self.comments[0].get('comment', '')
+    
+    def copy_base_project_data(self, project):
+        self.name = project.name
+        self.comments = project.comments
+        
+        self.save()

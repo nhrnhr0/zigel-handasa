@@ -6,54 +6,26 @@
 
 	export let data;
 	let len = data['description']['api-description'].max_childs_count;
+
 	let row = data.row;
+	let recipts = row.childs.filter((child) => child.type == 'קבלה');
 </script>
 
 {#each { length: len } as _, i}
 	<td>
-		{#if row.childs.length > i}
-			<!-- <ToolTipComponent>
-				<CurrencyCell data={row.childs[i].rel_total} />
-				<div slot="content">
-					<table class="table table-bordered">
-						<thead>
-							<tr>
-								<th scope="col">תאריך</th>
-								<th scope="col">סכום</th>
-								<th scope="col">מספר מסמך</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>
-									<HebrewDatetimeCell data={row.childs[i].doc_date} />
-								</td>
-								<td>
-									<CurrencyCell data={row.childs[i].rel_total} />
-									{#if row.childs[i].rel_total != row.childs[i].total}
-										מתוך <CurrencyCell data={row.childs[i].total} />
-									{/if}
-								</td>
-								<td>
-									{row.childs[i].doc_number}
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</ToolTipComponent> -->
+		{#if recipts.length > i}
 			<div
 				use:tooltip
-				title={new Date(row.childs[i].doc_date).toLocaleDateString('he-IL', {
+				title={new Date(recipts[i].doc_date).toLocaleDateString('he-IL', {
 					timeZone: 'Asia/Jerusalem'
 				}) +
 					' (' +
-					row.childs[i].doc_number +
+					recipts[i].doc_number +
 					')'}
 			>
-				<CurrencyCell data={row.childs[i].rel_total} />
-				{#if row.childs[i].rel_total != row.childs[i].total}
-					מתוך <CurrencyCell data={row.childs[i].total} />
+				<CurrencyCell data={recipts[i].rel_total} />
+				{#if recipts[i].rel_total != recipts[i].total}
+					מתוך <CurrencyCell data={recipts[i].total} />
 				{/if}
 			</div>
 		{/if}

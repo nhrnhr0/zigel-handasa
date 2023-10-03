@@ -7,6 +7,8 @@
 	let data = undefined;
 	let invoice = undefined;
 	let client_data = undefined;
+	let title = 'חשבונית חדשה';
+
 	onMount(async () => {
 		let urlParams = new URLSearchParams(window.location.search);
 		if (urlParams.has('linkedDocumentIds')) {
@@ -121,7 +123,7 @@
 			vatType: 0,
 			lang: 'he',
 			currency: 'ILS',
-			footer: 'lower text',
+			footer: '',
 			emailContent: '',
 			client: {
 				self: false,
@@ -129,7 +131,7 @@
 				id: recipient.id
 			},
 			discount: {
-				type: 'amount',
+				type: 'sum',
 				value: total_discount,
 				total: total_discount
 			},
@@ -158,5 +160,5 @@
 </script>
 
 {#if invoice}
-	<NewInvoiceInfo form_data={invoice} {client_data} />
+	<NewInvoiceInfo form_data={invoice} {client_data} {title} />
 {/if}

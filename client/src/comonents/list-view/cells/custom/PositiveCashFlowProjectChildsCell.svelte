@@ -13,20 +13,6 @@
 {#each { length: len } as _, i}
 	<td>
 		{#if recipts.length > i}
-			<!-- <div
-				use:tooltip
-				title={'' +
-					get_hebrew_date(recipts[i].doc_date) +
-					' (' +
-					convert_to_money(recipts[i].total_before_tax) +
-					')'}
-			>
-				<CurrencyCell data={recipts[i].rel_total} />
-			</div> -->
-			<!-- {recipts[i].rel_total}
-			{recipts[i].total}
-			{recipts[i].doc_date}
-			{recipts[i].doc_number} -->
 			<div
 				use:tooltip
 				title={get_hebrew_date(recipts[i]?.doc_date) + ' (' + recipts[i]?.doc_number + ')'}

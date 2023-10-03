@@ -1,7 +1,7 @@
 <script>
 	import { MultiSelect } from 'svelte-multiselect';
 	import DocumentIncomeTable from '../../DocumentIncomeTable.svelte';
-	import { network_create_invoice_from_price_proposals } from '$lib/network.js';
+	import { network_create_cancel_invoice_from_invoice } from '$lib/network.js';
 	import { onMount } from 'svelte';
 	import Flatpickr from '../flatpicker/Flatpickr.svelte';
 	import { notifier } from '@beyonk/svelte-notifications';
@@ -11,12 +11,12 @@
 	export let form_data;
 	export let client_data;
 
-	export function create_invoice() {
+	export function create_cancel_invoice() {
 		updateing = true;
 		debugger;
 		console.log('form_data', form_data);
 		console.log('client_data', client_data);
-		network_create_invoice_from_price_proposals(form_data).then((res) => {
+		network_create_cancel_invoice_from_invoice(form_data).then((res) => {
 			res.json().then((data) => {
 				console.log('data', data);
 				updateing = false;
@@ -77,28 +77,6 @@
 						bind:formattedValue={form_data.date}
 					/>
 				</div>
-				<div class="col-3">
-					<label for="documentDate">לתשלום עד *</label>
-					<!-- <input
-					class="form-control"
-					type="date"
-					id="documentDate"
-					name="documentDate"
-					placeholder="בחרו תאריך"
-					bind:value={form_data.dueDate}
-				/> -->
-					<Flatpickr
-						class="form-control"
-						options={{
-							dateFormat: 'Y/m/d',
-							altInput: true,
-							altFormat: 'd/m/Y',
-							enableTime: false,
-							defaultDate: form_data.dueDate
-						}}
-						bind:formattedValue={form_data.dueDate}
-					/>
-				</div>
 			</div>
 			<br />
 			<div class="row form-group">
@@ -123,6 +101,7 @@
 							bind:total={form_data.total}
 							bind:subtotal={form_data.subtotal}
 						/>
+						<!-- {JSON.stringify(form_data)} -->
 					</div>
 				</div>
 			</div>
@@ -195,7 +174,7 @@
 					class="btn btn-primary"
 					type="submit"
 					disabled={updateing}
-					on:click={create_invoice}
+					on:click={create_cancel_invoice}
 				>
 					{#if updateing}
 						<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" />

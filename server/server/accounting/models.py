@@ -45,12 +45,35 @@ class AccountingDoc(models.Model):
     def get_open_amount(self):
         
         if self.type == 10:# price proposal
-            return self.total_before_tax - self.get_total_child_invoices()
+            return self.total_before_tax - self.get_total_child_invoices_cancelled_calculated()
         elif self.type == 305:# invoice
             return self.total_before_tax - self.get_total_child_receipts()
-        
-    def get_total_child_invoices(self):
-        return self.get_total_child_docs_by_type(305)
+    def get_total_childs_cancelled_invoices(self):
+        total = 0
+        for child_rel in self.childs.all():
+            if child_rel.child.type == 330:
+                total += child_rel.total
+        return total
+    def get_total_invoices_cancelled_calculated(self):
+        total = self.total_before_tax
+        for child_rel in self.childs.all():
+            if child_rel.child.type ==330:
+                total -= child_rel.total
+        return total
+    def get_total_child_invoices_cancelled_calculated(self):
+        total = 0
+        for child_rel in self.childs.all():
+            if child_rel.child.type == 305:
+                total += child_rel.total
+                # check for child cancelled invoices
+                for child_rel2 in child_rel.child.childs.all():
+                    if child_rel2.child.type == 330:
+                        total -= child_rel2.total
+                        
+        return total
+    
+    def get_total_child_cancelled_invoices(self):
+        return self.get_total_child_docs_by_type(330)
     
     def get_total_child_receipts(self):
         return self.get_total_child_docs_by_type(330)
@@ -73,4 +96,7 @@ class AccountingDocPriceProposal(AccountingDoc):
 class AccountingDocInvoice(AccountingDoc):
     pass
 class AccountingDocReceipt(AccountingDoc):
+    pass
+
+class   AccountingDocCancelInvoice(AccountingDoc):
     pass

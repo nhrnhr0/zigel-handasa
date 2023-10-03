@@ -25,7 +25,17 @@ export async function network_create_invoice_from_price_proposals(invoice_data) 
     });
     return res;
 }
-
+export async function network_create_cancel_invoice_from_invoice(invoice_data) {
+    console.log('network_create_cancel_invoice_from_invoice');
+    let res = await fetch(`${BASE_SERVER_URL}/create-cancel-invoice/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(invoice_data)
+    });
+    return res;
+}
 
 export async function network_get_morning_info(ids) {
     console.log('network_get_morning_info');

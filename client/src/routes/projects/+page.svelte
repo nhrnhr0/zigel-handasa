@@ -1,5 +1,14 @@
 <script>
-	import TableViewPage from '../../comonents/list-view/TableViewPage.svelte';
+	import { API_PROJECTS, API_PROJECTS_DESCRIPTION } from '$lib/consts';
+
+	import ProjectsListView from '../../comonents/list-view/ProjectsListView.svelte';
+	let description_url = API_PROJECTS_DESCRIPTION;
+	let api_url = API_PROJECTS;
+</script>
+
+<ProjectsListView {description_url} {api_url} />
+
+<!-- <script>
 	import { API_PROJECTS, API_PROJECTS_DESCRIPTION } from '$lib/consts';
 	import { network_get_project_accounting_docs } from '$lib/network.js';
 	import { onMount } from 'svelte';
@@ -74,14 +83,12 @@
 								<th scope="col">סוג</th>
 								<th scope="col">סכום</th>
 								<th scope="col">סה"כ חשבוניות לפני מע"מ</th>
-								<!-- <th scope="col">תאריך לתשלום</th> -->
 							</tr>
 						</thead>
 						<tbody>
 							{#if slots_data[row.id] != undefined}
 								{#each slots_data[row.id] as doc, index}
 									<tr>
-										<!-- doc_date,doc_number,type,total,'', -->
 										<td>
 											<HebrewDatetimeCell data={doc.doc_date} />
 										</td>
@@ -141,4 +148,4 @@
 			padding: 0;
 		}
 	}
-</style>
+</style> -->

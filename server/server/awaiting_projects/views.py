@@ -244,7 +244,8 @@ def awaitingProjectApproveView(request, pk):
         order_number=order_number,
     )
     
-    project.comments = obj.comments
+    project.copy_base_project_data(obj)
+    
     
     obj.delete()
     root_price_proposal.active = True

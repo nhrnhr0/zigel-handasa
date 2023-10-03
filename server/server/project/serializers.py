@@ -10,14 +10,14 @@ class ProjectSerializer(ModelSerializer):
     last_comment = serializers.SerializerMethodField()
     total = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True, source='root_price_proposal.total')
     total_before_tax = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True, source='root_price_proposal.total_before_tax')
-    total_invoices_before_tax = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True, source='get_total_invoices_before_tax')
+    invoices_total_progress_before_tax = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True, source='get_total_invoices_before_tax')
     doc_number = serializers.CharField(source='root_price_proposal.doc_number', read_only=True)
     morning_id = serializers.CharField(source='root_price_proposal.morning_id', read_only=True)
     def get_last_comment(self, obj):
         return obj.get_last_comment_text()
     class Meta:
         model = Project
-        fields = ('id', 'name','total_invoices_before_tax','client__name','last_comment','created_at','updated_at','total','total_before_tax','status__name','order_number','doc_number','morning_id')
+        fields = ('id', 'name','invoices_total_progress_before_tax','client__name','last_comment','created_at','updated_at','total','total_before_tax','status__name','order_number','doc_number','morning_id')
         
 
 from client.models import Client

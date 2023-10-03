@@ -76,6 +76,20 @@
 	});
 </script>
 
+<div class="row" style="display: flex;flex-direction:row;">
+	<div class="col">
+		form_data
+		<pre>
+			{JSON.stringify(form_data?.api_data?.subtotal)}
+		</pre>
+	</div>
+	<div class="col">
+		original_data
+		<pre>
+			{JSON.stringify(original_data?.api_data?.subtotal)}
+		</pre>
+	</div>
+</div>
 {#if form_data}
 	<EditAwaitingProject bind:form_data on_update_function={update_project} />
 {/if}

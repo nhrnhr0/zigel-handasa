@@ -214,13 +214,27 @@ class ProjectRetriveUpdateView(APIView):
 def get_project_accounting_docs(request,pk):
     from accounting.models import AccountingDoc, AccountingDocRelation
     from accounting.serializers import ChildsAccountingDocRelationSerializer
+    # import Q
+    from django.db.models import Q
     obj = get_object_or_404(Project,pk=pk)
     price_prop = obj.root_price_proposal
-    docs = AccountingDocRelation.objects.filter(parent=price_prop)
-    print(docs)
-    serializer = ChildsAccountingDocRelationSerializer(docs,many=True)
+    docs = AccountingDoc.objects.filter(root_price_proposals=price_prop)
+    rels = AccountingDocRelation.objects.filter(parent__in=docs)
+    rels = rels.distinct()
+    serializer = ChildsAccountingDocRelationSerializer(rels,many=True)
     data = serializer.data
     return Response(data)
+    # docs = AccountingDocRelation.objects.filter(parent=price_prop)
+    # parents = docs.values('parent')
+    # childs = docs.values('child')
+    # related_docs = AccountingDocRelation.objects.filter(Q(parent__in=childs) | Q(child__in=parents)).exclude(parent=price_prop)
+    
+    
+    # print(docs)
+    # print(related_docs)
+    # serializer = ChildsAccountingDocRelationSerializer(docs,many=True)
+    # data = serializer.data
+    # return Response(data)
 
     
-    pass
+    # pass

@@ -34,6 +34,7 @@ class ChildsAccountingDocRelationSerializer(serializers.ModelSerializer):
     type = serializers.CharField(source='child.get_type_display', read_only=True)
     child_total = serializers.DecimalField(source='child.total_before_tax', read_only=True, max_digits=10, decimal_places=2)
     related_docs = serializers.SerializerMethodField()
+    morning_id = serializers.CharField(source='child.morning_id', read_only=True)
     
     def get_related_docs(self, obj):
         # AccountingDocRelationSerializer for parents and childs
@@ -47,7 +48,7 @@ class ChildsAccountingDocRelationSerializer(serializers.ModelSerializer):
         }
     class Meta:
         model = AccountingDocRelation
-        fields = ('id','child','doc_number','type','total','doc_date','child_total','related_docs',)
+        fields = ('id','child','doc_number','type','total','doc_date','child_total','related_docs','morning_id',)
 
 class RootPricePropProjectNameSerializer(serializers.ModelSerializer):
     name = serializers.CharField(source='root_project.name', read_only=True)

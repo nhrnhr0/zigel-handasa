@@ -37,6 +37,7 @@ class MorningAPI(metaclass=SingletonMeta):
     def __init__(self):
         print('init morning api')
         
+        
     def get_linked_docs(self,doc_id):
         # GET /api/v1/documents/{id}/linked
         url = f'{self.BASE_MORNING_URL}/documents/{doc_id}/linked'
@@ -86,6 +87,10 @@ class MorningAPI(metaclass=SingletonMeta):
         return response
         pass
         
+    def create_cancel_invoice_from_invoice(self, data):
+        url = f'{self.BASE_MORNING_URL}/documents'
+        response = self.make_request(url, method='POST', data=json.dumps(data))
+        return response
     def create_invoice_from_price_proposals(self, client, date, due_date, income, remarks, fotter,emailContent,description,discount):
         if discount:
             if discount.get('type') == 'amount':

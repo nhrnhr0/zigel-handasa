@@ -66,10 +66,33 @@ def morningWebhookDocumentView(request):
                 if not price_proposal.api_data.get('discount'):
                     price_proposal.api_data['discount'] = {
                         "total": "0.00",
-                        "type": "amount",
+                        "type": "sum",
                         "value": ""
                     }
-                    
+                else:
+                    # if the type is sum, we change the total from -200 to "200" and adding value=200
+                    # if {'type':'percentage','total':-2000} we change to {'type':'percentage','total':'2000','value':10}
+                    # total_str = 123.43 or 10.00
+                    total_str = abs(float(price_proposal.api_data['discount']['total']))
+                    total_str = f"{total_str:.2f}"
+                    price_proposal.api_data['discount']['total'] = total_str
+                    if price_proposal.api_data['discount']['type'] == 'sum':
+                        t = price_proposal.api_data['discount']['total']
+                        t = f'{t:.2f}'
+                        price_proposal.api_data['discount']['value'] = float(t)
+                    elif price_proposal.api_data['discount']['type'] == 'percentage':
+                        total_before_tax = 0
+                        for item in price_proposal.api_data['items']:
+                            total_before_tax += item['price'] * item['quantity']
+                        if total_before_tax != 0:
+                            total_after_discount = price_proposal.api_data['subtotal']
+                            # calculate the discount percentage
+                            discount_percentage = (total_before_tax - total_after_discount) / total_before_tax * 100
+                            # max 2 decimals
+                            discount_percentage = f"{discount_percentage:.2f}"
+                            
+                            price_proposal.api_data['discount']['value'] = float(discount_percentage)
+                        
                 # set "tax": [{total: convert to string}] with 2 decimals
                 # and api_data.total to string with 2 decimals
                 x = float(price_proposal.api_data['tax'][0]['total'])

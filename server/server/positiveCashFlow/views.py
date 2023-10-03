@@ -166,10 +166,10 @@ class PositiveCashFlowInvoiceView(generics.ListAPIView):
                     'sortable': True,
                     'type': 'text',
                 },
-                'total_before_tax': {
+                'total_invoices_bofore_tax': {
                     'lable': 'סכום חשבוניות לפני מע"מ',
                     'sortable': False,
-                    'type': 'number',
+                    'type': 'currency',
                 },
                 'total_receipts': {
                     'lable': 'סך קבלות לפני מע"מ',
