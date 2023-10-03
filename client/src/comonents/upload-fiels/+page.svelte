@@ -1,10 +1,11 @@
 <script>
   import { onMount } from 'svelte';
   import EditComponent from './editComponent.svelte';
+  import {BASE_SERVER_URL} from '../../lib/consts.js'
   let files;
   let file;
+  let formElement
   let isCLicked=null;
-  const SERVERPATH="http://127.0.0.1:8000"
   export let project_id 
 
   async function uploadFile() {
@@ -25,14 +26,16 @@
     
     fileData.append("projectId", project_id);
 
-    const response = await fetch(SERVERPATH + '/files_upload/new', {
+    const response = await fetch(BASE_SERVER_URL + '/files_upload/new', {
       method: 'POST',
       body: fileData,
     });
 
     if (response.ok) {
+      formElement.reset()
       const data = await response.json();
       files = data;
+      console.log(file)
     } else {
       console.error('HTTP error:', response.status, response.statusText);
     }
@@ -42,8 +45,7 @@
 }
 onMount(async () => {
     try {
-      
-      const response = await fetch(`${SERVERPATH}/files_upload/get/${project_id}`);
+      const response = await fetch(`${BASE_SERVER_URL}/files_upload/get/${project_id}`);
       if (response.ok) {
         // Assuming the response contains an array of files
         files = await response.json();
@@ -66,7 +68,9 @@ function changeClick(file){
 <div class="main-container">
 
   <div>
-    <input type="file" bind:files={file} on:change={uploadFile} multiple/>
+    <form  bind:this={formElement}>
+      <input type="file" bind:files={file} on:change={uploadFile} multiple/>
+    </form>
   </div>
   <div id="file-container">
 
@@ -78,7 +82,7 @@ function changeClick(file){
     <div class="link-container">
       <div id='file' on:click={()=>changeClick(file)}>{file.file_name}</div>
       {#if isCLicked === file}
-      <EditComponent  file={file} SERVERPATH={SERVERPATH} project_id={project_id} on:updatedData={getDataFromEdit}/>
+      <EditComponent  file={file}  project_id={project_id} on:updatedData={getDataFromEdit}/>
       {:else}
       <div class="div1"></div>
       {/if}
@@ -88,10 +92,6 @@ function changeClick(file){
   </div>
   
 </div>
-  <!-- <form on:submit={uploadFile}>
-  <input type="file" bind:files={file} />
-  <button type="submit">הוסף</button>
-</form> -->
 
 <style>
   .main-container{

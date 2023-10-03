@@ -31,6 +31,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.base import ContentFile
 from base_project.models import BaseProject
+from rest_framework import status
 @api_view(['GET'])
 def get_files(request,project_id):
     print(project_id)
@@ -44,46 +45,60 @@ def get_files(request,project_id):
 
 @api_view(['POST'])
 def add_new_file(request):
-    project_id=request.POST['projectId'] 
-    file_list=request.FILES.getlist('files')
-    file_names=request.POST.getlist('fileNames')
-    project=BaseProject.objects.get(pk=project_id)
-    if(file_list):
-        for i in range(len(file_list)):
-            current_file=FileUpload.objects.create(file_name=file_names[i],file=file_list[i])
-            project.files.add(current_file)
-            project.save()
-    else:
-        file= request.FILES['file']
-        file_name =request.POST['fileName']
-        new_file=FileUpload.objects.create(file_name=file_name, file=file)
-        project.files.add(new_file)
+    try:
+        project_id = request.POST['projectId']
+        project = BaseProject.objects.get(pk=project_id)
+        
+        if 'files' in request.FILES:
+            file_list = request.FILES.getlist('files')
+            file_names = request.POST.getlist('fileNames')
+
+            for i in range(len(file_list)):
+                current_file = FileUpload.objects.create(file_name=file_names[i], file=file_list[i])
+                project.files.add(current_file)
+
+        elif 'file' in request.FILES:
+            file = request.FILES['file']
+            file_name = request.POST['fileName']
+            new_file = FileUpload.objects.create(file_name=file_name, file=file)
+            project.files.add(new_file)
+
+        else:
+            return JsonResponse({'error': 'No files were provided in the request.'}, status=status.HTTP_400_BAD_REQUEST)
+
         project.save()
-    queryset = project.files.all()
-    # print(queryset)
-    serializer_class = MyModelSerializer(queryset, many=True)
-    # print(serializer_class.data)
-    return JsonResponse(serializer_class.data,safe=False)
+        queryset = project.files.all()
+        serializer_class = MyModelSerializer(queryset, many=True)
+        return JsonResponse(serializer_class.data, safe=False)
+    
+    except BaseProject.DoesNotExist:
+        return JsonResponse({'error': 'Project does not exist.'}, status=status.HTTP_404_NOT_FOUND)
+    
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['POST'])
 def delete_file(request):
-    file_id=request.POST['fileId']
-    project_id=request.POST['projectId']
-    delete_file=FileUpload.objects.get(pk=file_id) 
-    delete_file.delete()
-    files=BaseProject.objects.get(pk=project_id)
-    queryset=files.files.all()
-    serializer=MyModelSerializer(queryset,many=True)
-    return JsonResponse(serializer.data,safe=False)
+    try:
+        file_id = request.POST['fileId']
+        project_id = request.POST['projectId']
+        
+        try:
+            delete_file = FileUpload.objects.get(pk=file_id)
+        except FileUpload.DoesNotExist:
+            return JsonResponse({'error': 'File does not exist.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        delete_file.delete()
+        
+        try:
+            files = BaseProject.objects.get(pk=project_id)
+        except BaseProject.DoesNotExist:
+            return JsonResponse({'error': 'Project does not exist.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        queryset = files.files.all()
+        serializer = MyModelSerializer(queryset, many=True)
+        return JsonResponse(serializer.data, safe=False)
+    
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
-
-# @api_view(['POST'])
-# def view_uploaded_file(request, file_id):
-#     try:
-#         uploaded_file = FileUpload.objects.get(pk=file_id)
-#         response = HttpResponse(uploaded_file.file, content_type='application/octet-stream')
-#         response['Content-Disposition'] = f'attachment; filename="{uploaded_file.file_name}"'
-#         return response
-#     except FileUpload.DoesNotExist:
-#         return HttpResponse('File not found', status=404)

@@ -1,6 +1,6 @@
 <script>
     export let file
-    export let SERVERPATH
+    import {BASE_SERVER_URL} from '../../lib/consts.js'
     export let  project_id
     import {createEventDispatcher} from 'svelte'
     const dispatch =createEventDispatcher();
@@ -19,7 +19,7 @@ async function delteFile(file){
     const fileData= new FormData()
     fileData.append("fileId",file.id)
     fileData.append("projectId",project_id)
-    const response = await fetch(SERVERPATH+'/files_upload/delete', {
+    const response = await fetch(BASE_SERVER_URL+'/files_upload/delete', {
       method: 'POST',
       
       body:fileData
@@ -33,7 +33,7 @@ async function delteFile(file){
 
 </script>
 <div class="button-container">
-    <button class="btn" id="green-btn" on:click={getFile(SERVERPATH+file.file)}>
+    <button class="btn" id="green-btn" on:click={getFile(BASE_SERVER_URL+file.file)}>
         צפה
     </button>
     <button class="btn" id="red-btn" on:click={delteFile(file)}>
