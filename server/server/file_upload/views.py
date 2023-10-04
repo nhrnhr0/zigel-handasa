@@ -25,7 +25,7 @@ from django.shortcuts import render
 # from project.models import Project
 from rest_framework.decorators import api_view
 from .models import FileUpload
-from .serializers import MyModelSerializer
+from .serializers import ProjectFilesSerializer
 from django.http import JsonResponse
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -38,7 +38,7 @@ def get_files(request,project_id):
     try:
         project_files=BaseProject.objects.get(pk=project_id)
         queryset = project_files.files.all()
-        serializer_class = MyModelSerializer(queryset, many=True)
+        serializer_class = ProjectFilesSerializer(queryset, many=True)
         return JsonResponse(serializer_class.data, safe=False)
     except BaseProject.DoesNotExist:
         return JsonResponse({'error': 'Project not found'}, status=404)
@@ -68,7 +68,7 @@ def add_new_file(request):
 
         project.save()
         queryset = project.files.all()
-        serializer_class = MyModelSerializer(queryset, many=True)
+        serializer_class = ProjectFilesSerializer(queryset, many=True)
         return JsonResponse(serializer_class.data, safe=False)
     
     except BaseProject.DoesNotExist:
@@ -96,7 +96,7 @@ def delete_file(request):
             return JsonResponse({'error': 'Project does not exist.'}, status=status.HTTP_404_NOT_FOUND)
         
         queryset = files.files.all()
-        serializer = MyModelSerializer(queryset, many=True)
+        serializer = ProjectFilesSerializer(queryset, many=True)
         return JsonResponse(serializer.data, safe=False)
     
     except Exception as e:

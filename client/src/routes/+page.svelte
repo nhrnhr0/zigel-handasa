@@ -6,7 +6,6 @@
 <!-- display boxes with the navigation links -->
 <!-- $page.data.nav_data like in navbar -->
 <!-- {"id":1,"name":"ממתינים לאישור","url":"/waiting-approval","order":0}{"id":2,"name":"פרויקטים רצים","url":"/running-projects","order":1}{"id":3,"name":"פרויקטים גמורים","url":"/done-projects","order":2}{"id":4,"name":"פרויקטים שלא אושרו","url":"/not-approved","order":3}{"id":5,"name":"ניהול תזרימי","url":"/cash-flow","order":4}{"id":6,"name":"יצירת סטטוסים","url":"/create-statuses","order":5} -->
-
 <div class="boxes">
 	{#each $page.data.nav_data as item}
 		<div class="box">
