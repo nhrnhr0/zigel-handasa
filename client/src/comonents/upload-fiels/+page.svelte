@@ -25,8 +25,9 @@
     }
     
     fileData.append("projectId", project_id);
+    fileData.append("action","add_new_file");
 
-    const response = await fetch(BASE_SERVER_URL + '/files_upload/new', {
+    const response = await fetch(`${BASE_SERVER_URL}/files_upload/${project_id}`, {
       method: 'POST',
       body: fileData,
     });
@@ -35,17 +36,23 @@
       formElement.reset()
       const data = await response.json();
       files = data;
-      console.log(file)
+      const successAlert = document.getElementById('success-message');
+    successAlert.style.display = 'block';
+    formElement.reset();
+    setTimeout(function () {
+        successAlert.style.display = 'none';
+    }, 4000);
     } else {
       console.error('HTTP error:', response.status, response.statusText);
     }
   } catch (error) {
+    formElement.reset()
     console.error('Error uploading files:', error);
   }
 }
 onMount(async () => {
     try {
-      const response = await fetch(`${BASE_SERVER_URL}/files_upload/get/${project_id}`);
+      const response = await fetch(`${BASE_SERVER_URL}/files_upload/${project_id}`);
       if (response.ok) {
         // Assuming the response contains an array of files
         files = await response.json();
@@ -65,6 +72,10 @@ function changeClick(file){
   isCLicked=file===isCLicked?null:file;
 }
 </script>
+<div id="success-message" class="custom-alert">
+  הקבצים הועלו בהצלחה!
+</div>
+
 <div class="main-container">
 
   <div>
@@ -126,9 +137,26 @@ function changeClick(file){
     justify-content: center;
   }
   #file:hover{
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.19);
   }
   .div1{
     height: 40px;
   }
+  .custom-alert {
+    display: none;
+    padding: 10px;
+    background-color: #0d6efd;
+    color: white;
+    text-align: center;
+    position: fixed;
+    top: 10vh;
+    left: 50%;
+    height: 10vh;
+    width: 20vw;
+    transform: translateX(-50%);
+    z-index: 9999;
+    font-size: 120%;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px 0 rgba(35, 26, 125, 0.271), 0 6px 20px 0 rgba(24, 40, 110, 0.409);
+}
 </style>
