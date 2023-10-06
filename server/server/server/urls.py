@@ -29,10 +29,10 @@ from project.views import ProjectRetriveUpdateView,get_project_accounting_docs
 from rejectedProject.views import RejectedProjectListView,rejectedProjectsAPIDescription
 from accounting.views import AccountingDocListView,accountingDocsAPIDescription,get_accounting_docs_morning_info,create_invoice_from_price_proposals
 from accounting.views import get_related_accouting_docs
-from file_upload.views import get_files
-from file_upload.views import add_new_file
-from file_upload.views import delete_file
-from login.views import login
+# from file_upload.views import get_files
+# from file_upload.views import add_new_file
+# from file_upload.views import delete_file
+from file_upload.views import FilesUploadView
 from django.conf import settings
 from django.conf.urls.static import static
 urlpatterns = [
@@ -83,10 +83,10 @@ urlpatterns = [
     
     path('test/', test),
 
-    path('files_upload/new',add_new_file),
-    path('files_upload/get/<int:project_id>',get_files),
-    path('files_upload/delete',delete_file),
-    path('login',login)
+    # path('files_upload/new',add_new_file),
+    # path('files_upload/get/<int:project_id>',get_files),
+    # path('files_upload/delete',delete_file)
+    path('files_upload/<int:project_id>',FilesUploadView.as_view())
 ]
 
 if settings.DEBUG:

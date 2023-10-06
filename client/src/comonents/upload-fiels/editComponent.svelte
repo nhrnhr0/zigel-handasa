@@ -19,13 +19,15 @@ async function delteFile(file){
     const fileData= new FormData()
     fileData.append("fileId",file.id)
     fileData.append("projectId",project_id)
-    const response = await fetch(BASE_SERVER_URL+'/files_upload/delete', {
+    fileData.append("action","delete_file")
+    const response = await fetch(`${BASE_SERVER_URL}/files_upload/${project_id}`, {
       method: 'POST',
       
       body:fileData
      }) .then((response) => response.json())
     .then((data) => {
       // we are setting the names to the names variable
+    //   alert("הקובץ נמחק בהצלחה")
       dispatch('updatedData',data)
     });
     }
