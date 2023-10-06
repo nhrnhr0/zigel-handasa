@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'accounting',
     'base_project', # this is the base project, it is abstract and should not be used directly
     'file_upload',
+    'login',
 ]
 
 MIDDLEWARE = [
