@@ -1,6 +1,6 @@
 
 import { API_AWAITING_PROJECTS,API_PROJECTS, BASE_SERVER_URL } from '$lib/consts';
-    import {API_ACCOUNTING_DOCS_GET_MORNING_INFO} from '$lib/consts';
+    import {API_ACCOUNTING_DOCS_GET_MORNING_INFO,API_REJECTED_PROJECT} from '$lib/consts';
 
 export async function network_get_project_accounting_docs(project_id) {
     console.log('network_get_project_accounting_docs');
@@ -55,6 +55,28 @@ export async function network_update_awaiting_project(project_id, project_data) 
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(project_data)
+    });
+    return res;
+}
+export async function network_update_rejected_project(project_id, project_data) {
+    console.log('network_update_project');
+    let res =await fetch(`${API_REJECTED_PROJECT}${project_id}/`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(project_data)
+    });
+    return res;
+}
+
+export async function network_approve_rejected_project(rejected_project_id) {
+    console.log('network_approve_rejected_project');
+    let res =await fetch(`${API_REJECTED_PROJECT}${rejected_project_id}/approve/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
     });
     return res;
 }

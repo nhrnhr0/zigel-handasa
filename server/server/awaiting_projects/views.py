@@ -201,6 +201,7 @@ class AwaitingProjectRetriveUpdateView(APIView):
                     new_data = resp.json()
                     saved_obj.root_price_proposal.doc_number = new_data['number']
                     saved_obj.root_price_proposal.morning_id = new_data['id']
+                    saved_obj.root_price_proposal.api_data['number'] = new_data['number']
                     try:
                         saved_obj.root_price_proposal.save()
                     except Exception as e:
@@ -209,7 +210,11 @@ class AwaitingProjectRetriveUpdateView(APIView):
                         # we delete the price proposal and save again
                         if 'UNIQUE constraint failed: accounting_accountingdoc.morning_id' in str(e):
                             from accounting.models import AccountingDocPriceProposal
-                            AccountingDocPriceProposal.objects.filter(morning_id=new_data['id']).delete()
+                            price_prop_from_webhook = AccountingDocPriceProposal.objects.filter(morning_id=new_data['id'])
+                            price_prop_from_webhook = price_prop_from_webhook.first()
+                            if price_prop_from_webhook:
+                                price_prop_from_webhook.root_project.delete()
+                                price_prop_from_webhook.delete()
                             saved_obj.root_price_proposal.save()
                         
                 else:
@@ -274,18 +279,15 @@ def awaitingProjectRejectView(request, pk):
     from rejectedProject.models import RejectedProject
     rejected_project = RejectedProject.objects.create(
         name=obj.name,
-        client=obj.client,
-        last_comment=obj.last_comment or '',
-        total=obj.total,
         reason=reason,
     )
-    rejected_project.comments.set(obj.comments.all())
+    rejected_project.copy_base_project_data(obj)
+    
     root_price_proposal = obj.root_price_proposal
     obj.delete()
     root_price_proposal.active = False
     root_price_proposal.save()
     rejected_project.root_price_proposal = root_price_proposal
     rejected_project.save()
-    
     return Response(status=status.HTTP_200_OK)
 

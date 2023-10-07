@@ -1,22 +1,23 @@
 <script>
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { network_update_awaiting_project } from '$lib/network.js';
-	import EditAwaitingProject from '../../../comonents/EditAwaitingProject.svelte';
+	import { network_update_rejected_project } from '$lib/network.js';
+	import EditRejectedProject from '../../../comonents/rejectedProjects/EditRejectedProject.svelte';
 	// export let data;
 	import { beforeNavigate } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { API_AWAITING_PROJECTS } from '$lib/consts';
+	import { API_REJECTED_PROJECT } from '$lib/consts';
 	import { notifier } from '@beyonk/svelte-notifications';
 
 	let form_data = undefined;
 	let original_data = undefined;
 
 	onMount(async () => {
-		let url = `${API_AWAITING_PROJECTS}${$page.params.id}/`;
+		let url = `${API_REJECTED_PROJECT}${$page.params.id}/`;
 		console.log('fetching awaiting project data from server', url);
 		const res = await fetch(url);
 		const data = await res.json();
+		console.log('data: ', data);
 		original_data = JSON.parse(JSON.stringify(data));
 		form_data = JSON.parse(JSON.stringify(data));
 	});
@@ -34,7 +35,7 @@
 				p_data.submit_for_approval = true;
 			}
 		}
-		const res = await network_update_awaiting_project(project_id, p_data);
+		const res = await network_update_rejected_project(project_id, p_data);
 		console.log('res: ', res);
 		if (res.status == 200) {
 			notifier.success('הפרויקט עודכן בהצלחה', {
@@ -77,8 +78,14 @@
 </script>
 
 {#if form_data}
-	<EditAwaitingProject bind:form_data on_update_function={update_project} />
+	<EditRejectedProject bind:form_data on_update_function={update_project} />
 {/if}
 
 <style lang="scss">
+	.wraper {
+		.row {
+			margin: 0;
+			padding: 0;
+		}
+	}
 </style>

@@ -1,5 +1,9 @@
 
 from rest_framework import serializers
+from rest_framework.serializers import ModelSerializer
+
+from client.serializers import ClientSelectSerializer,get_all_clients_select
+
 from .models import RejectedProject, RejectedReason
 class RejectedReasonSelectSerializer(serializers.ModelSerializer):
     label = serializers.CharField(source='name', read_only=True)
@@ -10,8 +14,41 @@ class RejectedReasonSelectSerializer(serializers.ModelSerializer):
         fields = ('label', 'value',)
     
 class RejectedProjectSerializer(serializers.ModelSerializer):
-    client__name = serializers.CharField(source='client.name', read_only=True)
-    reason__name = serializers.CharField(source='reason.name', read_only=True)
+    client__name = serializers.CharField(source='root_price_proposal.client.name', read_only=True)
+    total = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True, source='root_price_proposal.total')
+    total_before_tax = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True, source='root_price_proposal.total_before_tax')
+    last_comment_text = serializers.SerializerMethodField()
+    doc_number = serializers.CharField(source='root_price_proposal.doc_number', read_only=True)
+    reason = serializers.CharField(source='reason.name', read_only=True)
+    def get_last_comment_text(self, obj):
+        return obj.get_last_comment_text()
     class Meta:
         model = RejectedProject
-        fields = ('id', 'name','client__name','last_comment','reason__name','created_at','updated_at',)
+        fields = ('id', 'name','client__name','last_comment_text','created_at','updated_at','total','total_before_tax', 'doc_number', 'reason')
+        
+class RejectedProjectDetailSerializer(ModelSerializer):
+    client = serializers.SerializerMethodField()
+    client_options = serializers.SerializerMethodField()
+    api_data = serializers.SerializerMethodField()
+    alert_date = serializers.DateTimeField(format="%d/%m/%Y %H:%M", required=False, allow_null=True,input_formats=['%d/%m/%Y %H:%M'])
+    # if comments is None: we need to return an empty list
+    comments = serializers.SerializerMethodField()
+    total = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True, source='root_price_proposal.total')
+    
+    def get_client(self, obj):
+        # to hanle multiselect we return [clientSerializer] and not clientSerializer
+        return [ClientSelectSerializer(obj.root_price_proposal.client, read_only=True).data]
+    def get_comments(self, obj):
+        if obj.comments is None:
+            return []
+        return obj.comments
+    
+    def get_client_options(self, obj):
+        return get_all_clients_select()
+    
+    
+    def get_api_data(self, obj):
+        return obj.root_price_proposal.api_data
+    class Meta:
+        model = RejectedProject
+        fields = ('id', 'name','client','alert_date','created_at','updated_at','total','comments','client_options','api_data',)

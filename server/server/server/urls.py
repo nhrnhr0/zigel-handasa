@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from navbar.views import NavbarListView
 from awaiting_projects.views import AwaitingProjectsListView, awaitingProjectsAPIDescription,AwaitingProjectRetriveUpdateView,awaitingProjectApproveView,awaitingProjectRejectView,awaitingProjectSnoozeView
-from rejectedProject.views import RejectedReasonSelectView
+from rejectedProject.views import RejectedProjectRetriveUpdateView, RejectedReasonSelectView,rejectedProjectApproveView
 
 from project.views import ProjectListView,projectsAPIDescription
 from morning_api.views import morningWebhookClientView,morningWebhookDocumentView
@@ -63,6 +63,8 @@ urlpatterns = [
     # rejected-projects
     path('rejected-projects/', RejectedProjectListView.as_view()),
     path('rejected-projects-description/', rejectedProjectsAPIDescription),
+    path('rejected-projects/<int:pk>/', RejectedProjectRetriveUpdateView.as_view()),
+    path('rejected-projects/<int:pk>/approve/', rejectedProjectApproveView),
     
     # accounting
     path('accounting-docs/', AccountingDocListView.as_view()),
