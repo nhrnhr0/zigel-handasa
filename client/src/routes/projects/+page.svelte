@@ -9,15 +9,22 @@
 	import HebrewDatetimeCell from '../../comonents/list-view/cells/HebrewDatetimeCell.svelte';
 	import ToolTipComponent from '../../comonents/shered/ToolTipComponent.svelte';
 	import RelatedDocsTable from '../../comonents/layout/RelatedDocsTable.svelte';
+  	import { goto } from '$app/navigation';
 	let description_url = API_PROJECTS_DESCRIPTION;
 	let api_url = API_PROJECTS;
 	let description_data = undefined;
 	let api_data = undefined;
 	onMount(async () => {
-		console.log('awaiting projects page');
-		// fetch description
-		fetchDescription();
-		fetchApiData();
+		let token=localStorage.getItem("token")
+		if(!token){
+			goto("/login")
+		}
+		else{
+			console.log('awaiting projects page');
+			// fetch description
+			fetchDescription();
+			fetchApiData();
+		}
 	});
 
 	const fetchDescription = async () => {

@@ -1,6 +1,14 @@
 <script>
 	import { page } from '$app/stores';
-	console.log($page.data.nav_data);
+	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
+	onMount(async()=>{
+		let token=localStorage.getItem("token")
+		if(!token){
+			goto("/login")
+		}
+	})
+	
 </script>
 
 <!-- display boxes with the navigation links -->

@@ -1,5 +1,6 @@
 <script>
   import { onMount } from 'svelte';
+  import { goto } from '$app/navigation';
   import EditComponent from './editComponent.svelte';
   import {BASE_SERVER_URL} from '../../lib/consts.js'
   let files;
@@ -9,6 +10,11 @@
   export let project_id 
 
   async function uploadFile() {
+    const token= localStorage.getItem("token")
+    if(!token){
+      console.error('token not found')
+    }
+    else{
   try {
     const fileData = new FormData();
     
@@ -30,6 +36,9 @@
     const response = await fetch(`${BASE_SERVER_URL}/files_upload/${project_id}`, {
       method: 'POST',
       body: fileData,
+      headers:{
+        'Authorization': `Token ${token}`
+      }
     });
 
     if (response.ok) {
@@ -50,17 +59,23 @@
     console.error('Error uploading files:', error);
   }
 }
+}
 onMount(async () => {
-    try {
-      const response = await fetch(`${BASE_SERVER_URL}/files_upload/${project_id}`);
-      if (response.ok) {
-        // Assuming the response contains an array of files
-        files = await response.json();
-      } else {
-        console.error('Failed to fetch files:', response.status, response.statusText);
+    let token=localStorage.getItem("token")
+    if(token||token!=undefined){
+      try {
+        const response = await fetch(`${BASE_SERVER_URL}/files_upload/${project_id}`);
+        if (response.ok) {
+          files = await response.json();
+        } else {
+          console.error('Failed to fetch files:', response.status, response.statusText);
+        }
+      } catch (error) {
+        console.error('Error fetching files:', error);
       }
-    } catch (error) {
-      console.error('Error fetching files:', error);
+    }
+    else{
+      goto("/login")
     }
   });
 
