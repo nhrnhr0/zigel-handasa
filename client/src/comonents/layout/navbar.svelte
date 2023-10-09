@@ -61,10 +61,13 @@
 						<a class="nav-link" href={item.url}>{item.name}</a>
 					</li>
 					{/each}
-					<li on:click={logOut} class="nav-item">
-					<span class="nav-link" style="cursor: pointer;" id="logout">התנתק</span>
-					</li>
+					
 			</ul>
+			<div class=navbaar-nav>
+				<span on:click={logOut} class="nav-item" id="logout-span">
+					<span class="nav-link" style="cursor: pointer;" id="logout">התנתק</span>
+				</span>
+				</div>
 		</div>
 	</div>
 </nav>
@@ -81,8 +84,21 @@
 			}
 		}
 	}
+	#logout{
+		min-height: 40px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding-left: 5px;
+		padding-right: 5px;
+	}
 	#logout:hover{
 		color: white;
 		background-color: #f44336;
+		
+	}
+	#navbarNav{
+		display: flex;
+		justify-content: space-between;
 	}
 </style>

@@ -15,7 +15,6 @@ def login(request):
     username=request.POST["userName"]
     password=request.POST["password"]
     user= authenticate(username=username,password=password)
-    print(user)
     if user is not None:
         token,created= Token.objects.get_or_create(user=user)
         if not created:

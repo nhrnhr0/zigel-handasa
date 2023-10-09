@@ -33,6 +33,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.files.base import ContentFile
 from base_project.models import BaseProject
 from rest_framework import status
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import authentication_classes, permission_classes
 # @api_view(['GET'])
 # def get_files(request,project_id):
 #     print(project_id)
@@ -102,7 +105,8 @@ from rest_framework import status
     
 #     except Exception as e:
 #         return JsonResponse({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 class FilesUploadView(APIView):
     def get(self, request, project_id):
         try:

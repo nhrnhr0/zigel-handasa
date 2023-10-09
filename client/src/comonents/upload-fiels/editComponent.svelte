@@ -22,8 +22,10 @@ async function delteFile(file){
     fileData.append("action","delete_file")
     const response = await fetch(`${BASE_SERVER_URL}/files_upload/${project_id}`, {
       method: 'POST',
-      
-      body:fileData
+      body:fileData,
+      headers:{
+        'Authorization': `Token ${token}`
+      }
      }) .then((response) => response.json())
     .then((data) => {
       // we are setting the names to the names variable

@@ -64,7 +64,12 @@ onMount(async () => {
     let token=localStorage.getItem("token")
     if(token||token!=undefined){
       try {
-        const response = await fetch(`${BASE_SERVER_URL}/files_upload/${project_id}`);
+        const response = await fetch(`${BASE_SERVER_URL}/files_upload/${project_id}`,{
+          method:'GET',
+          headers:{
+            'Authorization': `Token ${token}`
+          }
+        });
         if (response.ok) {
           files = await response.json();
         } else {

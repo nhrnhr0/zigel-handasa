@@ -46,51 +46,71 @@
     </form>
 </div>
 
+
 <style>
-    #main-container{
-        display: flex;
-        flex-direction: column;
-        height: 90vh;
-        width: 100vw;
-        align-items: center;
-		background: rgb(2,0,36);
-		background: linear-gradient(270deg, rgba(2,0,36,1) 0%, rgba(42,178,184,1) 0%, rgba(0,212,255,1) 100%);
-    }
-    #login-form{
-        height: 45vh;
-        width: 500px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-around;
-        align-items: center;
-        border-radius: 10px;
-        background-color: rgb(169, 197, 198);
-		position: relative;
-		top: 10%;
-    }
-	#submit-btn{
-		border-radius: 10px;
-		border-color: none;
-		height: 4vh;
-		width: 13vw;
-		font-size:100%;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-	#submit-btn:hover{
-		color: white;
-		background-color: #4CAF50;
-	}
-	.login-input{
-		border-radius: 10px;
-		height: 4vh;
-		width: 13vw;
-	}
-	h3{
-		font-size: 1rem;
-	}
-	h1{
-		font-size: 2rem;
-	}
+#main-container {
+    background: linear-gradient(135deg, #3498db, #6c5ce7);
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Style the login container */
+#login-form {
+    background-color: rgba(255, 255, 255, 0.95); /* Slightly transparent white background */
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5);
+    text-align: center; /* Center the content horizontally */
+    max-width: 400px; /* Limit the width of the login form */
+}
+
+/* Style the input container */
+.input-container {
+    margin-bottom: 20px;
+}
+
+/* Style the input fields */
+.login-input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+}
+
+.login-input:focus {
+    border-color: #4CAF50;
+    outline: none;
+}
+
+/* Style the headings */
+h1 {
+    font-size: 2rem;
+}
+
+h3 {
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
+
+/* Style the submit button */
+#submit-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#submit-btn:hover {
+    background-color: #45a049;
+}
+
 </style>
