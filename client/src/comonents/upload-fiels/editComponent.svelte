@@ -16,6 +16,7 @@
 async function delteFile(file){
     const userCoinfirm =window.confirm("אתה בטוח שתרצה למחוק?")
     if(userCoinfirm){
+    let token = localStorage.getItem("token")   
     const fileData= new FormData()
     fileData.append("fileId",file.id)
     fileData.append("projectId",project_id)
