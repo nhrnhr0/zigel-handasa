@@ -23,7 +23,7 @@
 		}
 	}
 
-	let parentTxt = 'נוצר על סמך מסמך';
+	let parentTxt = 'נוצר על סמך';
 	let childTxt = 'נוצר עליו מסמך';
 </script>
 

@@ -32,6 +32,8 @@
 			updateing = false;
 		});
 	}
+
+	function end_project() {}
 </script>
 
 <div class="container">
@@ -75,6 +77,21 @@
 									id="order_number"
 									bind:value={form_data.order_number}
 								/>
+							</div>
+						</div>
+						<div class="col">
+							<div class="form-group">
+								<br />
+								<div class="form-check form-switch">
+									<input
+										class="form-check-input"
+										type="checkbox"
+										role="switch"
+										id="flexSwitchCheckChecked"
+										bind:checked={form_data.closed}
+									/>
+									<label class="form-check-label" for="flexSwitchCheckChecked"> סגור פרויקט </label>
+								</div>
 							</div>
 						</div>
 					</div>

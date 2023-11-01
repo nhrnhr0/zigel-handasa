@@ -3,7 +3,8 @@ import requests
 import json
 import datetime
 import os
-
+from django.utils import timezone
+import pytz
 def test(request):
     from django.http import JsonResponse
 
@@ -36,6 +37,60 @@ class MorningAPI(metaclass=SingletonMeta):
     def __init__(self):
         print('init morning api')
         
+        
+    def get_linked_docs(self,doc_id):
+        # GET /api/v1/documents/{id}/linked
+        url = f'{self.BASE_MORNING_URL}/documents/{doc_id}/linked'
+        response = self.make_request(url)
+        return response
+        pass
+    
+    def get_doc_info(self, doc_id):
+        # GET /api/v1/documents/{id}
+        url = f'{self.BASE_MORNING_URL}/documents/{doc_id}'
+        response = self.make_request(url)
+        return response
+        pass
+    
+    def send_price_proposal_from_awaiting_project(self,awaiting_project):
+        print('sending price proposal', awaiting_project)
+        api_data = awaiting_project.root_price_proposal.api_data
+        discount = api_data.get('discount')
+        if(discount):
+            if(discount.get('type') == 'amount'):
+                discount['type'] = 'sum'
+        # current date
+        import datetime
+        date = datetime.datetime.now().strftime ("%Y-%m-%d")
+        data = {
+            "type": 10,
+            "date": date,
+            "vatType": 0,
+            "lang": "he",
+            "currency": "ILS",
+            "description": api_data.get('description', ''),
+            "remarks": api_data.get('remarks', ''),
+            "footer": api_data.get('footer', ''),
+            "emailContent":api_data.get('recipient').get('email_content'),
+            "client": api_data.get('recipient'),
+            "rounding": False,
+            "signed": True,
+            "income": api_data.get('items'),
+            "discount":discount
+        }
+        res = self.send_price_proposal(data)
+        return res
+    def send_price_proposal(self, data):
+        # POST  /api/v1/documents
+        url = f'{self.BASE_MORNING_URL}/documents'
+        response = self.make_request(url, method='POST', data=json.dumps(data))
+        return response
+        pass
+        
+    def create_cancel_invoice_from_invoice(self, data):
+        url = f'{self.BASE_MORNING_URL}/documents'
+        response = self.make_request(url, method='POST', data=json.dumps(data))
+        return response
     def create_invoice_from_price_proposals(self, client, date, due_date, income, remarks, fotter,emailContent,description,discount):
         if discount:
             if discount.get('type') == 'amount':
@@ -63,9 +118,14 @@ class MorningAPI(metaclass=SingletonMeta):
         response = self.make_request(url, method='POST', data=json.dumps(data))
         return response
         pass
-    def convert_django_date_to_morning_date(self, date):
-        date = datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ')
-        return date.strftime('%Y-%m-%d')
+    def convert_django_date_to_morning_date(self, date, format='%Y-%m-%dT%H:%M:%S.%fZ'):
+        date = datetime.datetime.strptime(date, format)
+        # set timezone Israel/Jerusalem timezone
+        date = date.replace(tzinfo=pytz.timezone('Asia/Jerusalem'))
+        # convert to morning format
+        date = date.strftime('%Y-%m-%d')
+        return date
+        pass
     
     def make_request(self, url, method='GET', data=None, include_auth=True):
         print('making request', method, ' to ', url)

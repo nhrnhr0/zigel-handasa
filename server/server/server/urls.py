@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from navbar.views import NavbarListView
 from awaiting_projects.views import AwaitingProjectsListView, awaitingProjectsAPIDescription,AwaitingProjectRetriveUpdateView,awaitingProjectApproveView,awaitingProjectRejectView,awaitingProjectSnoozeView
-from rejectedProject.views import RejectedReasonSelectView
+from rejectedProject.views import RejectedProjectRetriveUpdateView, RejectedReasonSelectView,rejectedProjectApproveView
 
 from project.views import ProjectListView,projectsAPIDescription
 from morning_api.views import morningWebhookClientView,morningWebhookDocumentView
@@ -27,7 +27,7 @@ from morning_api.views import morningWebhookClientView,morningWebhookDocumentVie
 from morning_api.api import test
 from project.views import ProjectRetriveUpdateView,get_project_accounting_docs
 from rejectedProject.views import RejectedProjectListView,rejectedProjectsAPIDescription
-from accounting.views import AccountingDocListView,accountingDocsAPIDescription,get_accounting_docs_morning_info,create_invoice_from_price_proposals
+from accounting.views import AccountingDocListView,accountingDocsAPIDescription,get_accounting_docs_morning_info,create_invoice_from_price_proposals,create_cancel_invoice_from_invoice
 from accounting.views import get_related_accouting_docs
 # from file_upload.views import get_files
 # from file_upload.views import add_new_file
@@ -36,6 +36,8 @@ from login.views import login
 from file_upload.views import FilesUploadView
 from django.conf import settings
 from django.conf.urls.static import static
+from positiveCashFlow.views import PositiveCashFlowInvoiceView,PositiveCashFlowProjectView
+from done_projects.views import DoneProjectListView,doneProjectsAPIDescription
 urlpatterns = [
     path("__debug__/", include("debug_toolbar.urls")),
     path('admin/', admin.site.urls),
@@ -57,6 +59,10 @@ urlpatterns = [
     path('projects/', ProjectListView.as_view()),
     path('projects-description/', projectsAPIDescription),
     
+    # done projects
+    path('done-projects/', DoneProjectListView.as_view()),
+    path('done-projects-description/', doneProjectsAPIDescription),
+    
     path('projects/<int:pk>/', ProjectRetriveUpdateView.as_view()),
     path('projects/<int:pk>/accounting-docs/', get_project_accounting_docs),
     
@@ -64,6 +70,8 @@ urlpatterns = [
     # rejected-projects
     path('rejected-projects/', RejectedProjectListView.as_view()),
     path('rejected-projects-description/', rejectedProjectsAPIDescription),
+    path('rejected-projects/<int:pk>/', RejectedProjectRetriveUpdateView.as_view()),
+    path('rejected-projects/<int:pk>/approve/', rejectedProjectApproveView),
     
     # accounting
     path('accounting-docs/', AccountingDocListView.as_view()),
@@ -74,6 +82,11 @@ urlpatterns = [
     path('accounting-docs-morning-info/', get_accounting_docs_morning_info), # used to create invoice from price proposals
     
     path('create-invoice/', create_invoice_from_price_proposals),
+    path('create-cancel-invoice/', create_cancel_invoice_from_invoice),
+    
+    # possitive cash flow
+    path('positive-cash-flow-invoice/',PositiveCashFlowInvoiceView.as_view()),
+    path('positive-cash-flow-project/',PositiveCashFlowProjectView.as_view()),
     
     
     # morning-webhook

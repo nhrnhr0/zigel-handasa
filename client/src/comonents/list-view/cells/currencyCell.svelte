@@ -8,4 +8,6 @@
 	}).format(data);
 </script>
 
-{value}
+<td>
+	{value}
+</td>

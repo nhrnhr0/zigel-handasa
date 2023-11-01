@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'base_project', # this is the base project, it is abstract and should not be used directly
     'file_upload',
     'login',
+    'done_projects',
 ]
 
 MIDDLEWARE = [
@@ -139,7 +140,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Jerusalem'
 
 USE_I18N = True
 

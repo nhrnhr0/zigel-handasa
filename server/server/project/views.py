@@ -24,7 +24,7 @@ class ProjectListView(generics.ListAPIView):
 
     * Requires token authentication.
     """
-    queryset = Project.objects.select_related('root_price_proposal','root_price_proposal__client','status',).all()
+    queryset = Project.objects.select_related('root_price_proposal','root_price_proposal__client','status',).filter(closed=False)
     serializer_class = ProjectSerializer
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend,filters.SearchFilter,filters.OrderingFilter,
                        multiSelectFilterFactory('root_price_proposal__client__in'),multiSelectFilterFactory('status__in'),
@@ -34,6 +34,7 @@ class ProjectListView(generics.ListAPIView):
         'name': ['icontains'],
         'created_at': ['lte','gte'],
         'updated_at': ['lte','gte'],
+        'closed': ['exact'],
     }
     search_fields = ['name','root_price_proposal__client__name','root_price_proposal__total',]
     pagination_class = StandardResultsSetPagination
@@ -43,7 +44,6 @@ from client.models import Client
 @api_view(['GET'])
 def projectsAPIDescription(request):
     pass
-    list_view = ProjectListView
     clients_select = ClientSelectSerializer(Client.objects.all(),many=True).data
     status_select = ProjectStatusSelectSerializer(ProjectStatus.objects.all(),many=True).data
     # clients_select = ClientSelectSerializer(Client.objects.all(),many=True).data
@@ -186,6 +186,7 @@ class ProjectRetriveUpdateView(APIView):
         # serializer = self.class_serializer(obj, data=request.data)
         saved_obj.name = request.data['name']
         saved_obj.order_number = request.data['order_number']
+        saved_obj.closed = request.data['closed']
         if len(request.data['client']) > 0:
             saved_obj.client_id = request.data['client'][0]['value']
             saved_obj.root_price_proposal.client_id = request.data['client'][0]['value']
@@ -213,13 +214,27 @@ class ProjectRetriveUpdateView(APIView):
 def get_project_accounting_docs(request,pk):
     from accounting.models import AccountingDoc, AccountingDocRelation
     from accounting.serializers import ChildsAccountingDocRelationSerializer
+    # import Q
+    from django.db.models import Q
     obj = get_object_or_404(Project,pk=pk)
     price_prop = obj.root_price_proposal
-    docs = AccountingDocRelation.objects.filter(parent=price_prop)
-    print(docs)
-    serializer = ChildsAccountingDocRelationSerializer(docs,many=True)
+    docs = AccountingDoc.objects.filter(root_price_proposals=price_prop)
+    rels = AccountingDocRelation.objects.filter(parent__in=docs)
+    rels = rels.distinct()
+    serializer = ChildsAccountingDocRelationSerializer(rels,many=True)
     data = serializer.data
     return Response(data)
+    # docs = AccountingDocRelation.objects.filter(parent=price_prop)
+    # parents = docs.values('parent')
+    # childs = docs.values('child')
+    # related_docs = AccountingDocRelation.objects.filter(Q(parent__in=childs) | Q(child__in=parents)).exclude(parent=price_prop)
+    
+    
+    # print(docs)
+    # print(related_docs)
+    # serializer = ChildsAccountingDocRelationSerializer(docs,many=True)
+    # data = serializer.data
+    # return Response(data)
 
     
-    pass
+    # pass

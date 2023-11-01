@@ -4,6 +4,7 @@
 	import TableFilterPanel from '../../comonents/list-view/panels/TableFilterPanel.svelte';
 	import TableDataPanel from '../../comonents/list-view/panels/TableDataPanel.svelte';
 	import { onMount } from 'svelte';
+	import AccountingDocNumberTooltipCell from '../../comonents/list-view/cells/custom/AccountingDocNumberTooltipCell.svelte';
 	let description_url = API_ACCOUNTING_DOCS_DESCRIPTION;
 	let api_url = API_ACCOUNTING_DOCS;
 	let api_data = undefined;
@@ -98,21 +99,21 @@
 					create_invoice(selected_data);
 				}
 			});
-			actions.push({
-				label: 'צור קבלה על סמך הצעות מחיר',
-				action: () => {
-					create_receipt(selected_data);
-				}
-			});
+			// actions.push({
+			// 	label: 'צור קבלה על סמך הצעות מחיר',
+			// 	action: () => {
+			// 		create_receipt(selected_data);
+			// 	}
+			// });
 		}
 
 		if (only_invoices_selected && only_one_client_selected) {
-			actions.push({
-				label: 'צור קבלה על סמך חשבונית',
-				action: () => {
-					create_receipt(selected_data);
-				}
-			});
+			// actions.push({
+			// 	label: 'צור קבלה על סמך חשבונית',
+			// 	action: () => {
+			// 		create_receipt(selected_data);
+			// 	}
+			// });
 		}
 
 		if (only_receipts_selected && only_one_client_selected) {
@@ -136,6 +137,9 @@
 			allow_select={true}
 			{on_select_change}
 			bind:actions
+			user_cell_components={{
+				'doc-number-tooltip': AccountingDocNumberTooltipCell
+			}}
 		/>
 	</div>
 </div>

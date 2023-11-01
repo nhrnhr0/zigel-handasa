@@ -2,9 +2,11 @@
 	export let data;
 </script>
 
-{#if data}
-	{new Date(data).toLocaleString('he-IL', {
-		timeZone: 'Asia/Jerusalem',
-		dateStyle: 'short'
-	})}
-{/if}
+<td>
+	{#if data}
+		{new Date(data).toLocaleString('he-IL', {
+			timeZone: 'Asia/Jerusalem',
+			dateStyle: 'short'
+		})}
+	{/if}
+</td>

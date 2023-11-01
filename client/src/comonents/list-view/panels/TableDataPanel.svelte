@@ -14,6 +14,7 @@
 	import CurrencyCell from '../cells/currencyCell.svelte';
 	import AwaitingProjectsAlertDateCell from '../cells/custom/AwaitingProjectsAlertDateCell.svelte';
 	import ProjectsProgressCell from '../cells/custom/ProjectsProgressCell.svelte';
+	import DoneProjectsActionCell from '../cells/custom/DoneProjectsActionCell.svelte';
 	export let description;
 	export let api_data;
 	export let allow_select;
@@ -236,13 +237,15 @@
 			index: index
 		});
 	}
-
-	export let custom_cell_components = {
+	export let user_cell_components = {};
+	let custom_cell_components = {
 		'test-component': TestCustomCell,
 		'awaiting-projects-action-cell': AwaitingProjectsActionCell,
 		'projects-action-cell': ProjectsActionCell,
+		'done-projects-action-cell': DoneProjectsActionCell,
 		'awaiting-projects-alert-date-cell': AwaitingProjectsAlertDateCell,
-		'projects-progress-cell': ProjectsProgressCell
+		'projects-progress-cell': ProjectsProgressCell,
+		...user_cell_components
 	};
 </script>
 
@@ -290,7 +293,7 @@
 						{/if}
 						{#each Object.keys(description['api-description'].fields) as field_key, i}
 							{@const field = description['api-description'].fields[field_key]}
-							<th>
+							<th colspan={field.colspan || 1} rowspan={field.rowspan || 1}>
 								<button class="btn transparent-btn" on:click={() => preform_sort(field, field_key)}>
 									{field.lable}
 
@@ -380,31 +383,31 @@
 								</td>
 							{/if}
 							{#each Object.keys(description['api-description'].fields) as field_key}
-								<td>
-									<div class="my-td">
-										{#if description['api-description'].fields[field_key].type === 'datetime'}
-											<HebrewDateTimeCell data={row[field_key]} />
-										{:else if description['api-description'].fields[field_key].type === 'date'}
-											<HebrewDateCell data={row[field_key]} />
-										{:else if description['api-description'].fields[field_key].type === 'currency'}
-											<CurrencyCell data={row[field_key]} />
-										{:else if description['api-description'].fields[field_key].type === 'custom'}
-											<svelte:component
-												this={custom_cell_components[
-													description['api-description'].fields[field_key].custom_component
-												]}
-												data={{
-													row: row,
-													field_key: field_key,
-													description: description,
-													api_data: api_data
-												}}
-											/>
-										{:else}
-											<RawCell data={row[field_key]} />
-										{/if}
-									</div>
-								</td>
+								<!-- <td>
+									<div class="my-td"> -->
+								{#if description['api-description'].fields[field_key].type === 'datetime'}
+									<HebrewDateTimeCell data={row[field_key]} />
+								{:else if description['api-description'].fields[field_key].type === 'date'}
+									<HebrewDateCell data={row[field_key]} />
+								{:else if description['api-description'].fields[field_key].type === 'currency'}
+									<CurrencyCell data={row[field_key]} />
+								{:else if description['api-description'].fields[field_key].type === 'custom'}
+									<svelte:component
+										this={custom_cell_components[
+											description['api-description'].fields[field_key].custom_component
+										]}
+										data={{
+											row: row,
+											field_key: field_key,
+											description: description,
+											api_data: api_data
+										}}
+									/>
+								{:else}
+									<RawCell data={row[field_key]} />
+								{/if}
+								<!-- </div>
+								</td> -->
 							{/each}
 						</tr>
 						{#if expendable}
@@ -478,13 +481,8 @@
 		}
 		tbody {
 			tr {
-				td {
-					.my-td {
-						display: flex;
-						justify-content: center;
-						align-items: center;
-						text-align: center;
-					}
+				:global(td) {
+					text-align: center;
 				}
 
 				&.expended-row {

@@ -23,7 +23,7 @@ class AwaitingProjectDetailSerializer(ModelSerializer):
     client = serializers.SerializerMethodField()
     client_options = serializers.SerializerMethodField()
     api_data = serializers.SerializerMethodField()
-    alert_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%S", required=False, allow_null=True)
+    alert_date = serializers.DateTimeField(format="%d/%m/%Y %H:%M", required=False, allow_null=True,input_formats=['%d/%m/%Y %H:%M'])
     # if comments is None: we need to return an empty list
     comments = serializers.SerializerMethodField()
     total = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True, source='root_price_proposal.total')

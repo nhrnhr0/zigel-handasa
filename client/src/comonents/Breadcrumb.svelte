@@ -4,7 +4,11 @@
 		'waiting-approval': 'פרויקטים ממתינים לאישור',
 		projects: 'פרויקטים',
 		'rejected-project': 'פרויקטים דחויים',
-		accounting: 'כספים'
+		accounting: 'כספים',
+		'positive-cash-flow': 'דוח תזרים חיובי',
+		client: 'לקוח',
+		project: 'פרויקט',
+		invoice: 'חשבונית'
 	};
 
 	let crumbs: Array<{ label: string; href: string }> = [];

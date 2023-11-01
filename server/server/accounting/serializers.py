@@ -3,22 +3,30 @@ from .models import AccountingDoc, AccountingDocPriceProposal,AccountingDocRelat
 from rest_framework import serializers
 from project.models import Project
 
-# class AccountingDocRelationChildSerializer(serializers.ModelSerializer):
-#     doc_number = serializers.CharField(source='child.doc_number', read_only=True)
-#     doc_date = serializers.CharField(source='child.created_at', read_only=True)
-#     type = serializers.CharField(source='child.get_type_display', read_only=True)
-#     child_total = serializers.DecimalField(source='child.total_before_tax', read_only=True, max_digits=10, decimal_places=2)
-#     class Meta:
-#         model = AccountingDocRelation
-#         fields = ('id','child','doc_number','type','total','doc_date','child_total',)
-# class AccountingDocRelationParentSerializer(serializers.ModelSerializer):
-#     doc_number = serializers.CharField(source='parent.doc_number', read_only=True)
-#     doc_date = serializers.CharField(source='parent.created_at', read_only=True)
-#     type = serializers.CharField(source='parent.get_type_display', read_only=True)
-#     parent_total = serializers.DecimalField(source='parent.total_before_tax', read_only=True, max_digits=10, decimal_places=2)
-#     class Meta:
-#         model = AccountingDocRelation
-#         fields = ('id','parent','doc_number','type','total','doc_date','parent_total',)
+
+
+
+class AccountingDocRelationSerializerFlatParents(serializers.ModelSerializer):
+    type = serializers.CharField(source='parent.get_type_display', read_only=True)
+    doc_number = serializers.CharField(source='parent.doc_number', read_only=True)
+    doc_date = serializers.CharField(source='parent.created_at', read_only=True)
+    rel_total = serializers.DecimalField(source='total', read_only=True, max_digits=10, decimal_places=2)
+    
+    class Meta:
+        model = AccountingDocRelation
+        fields = ('id','rel_total','doc_number','type','total','doc_date',)
+
+class AccountingDocRelationSerializerFlatChilds(serializers.ModelSerializer):
+    type = serializers.CharField(source='child.get_type_display', read_only=True)
+    doc_number = serializers.CharField(source='child.doc_number', read_only=True)
+    doc_date = serializers.CharField(source='child.created_at', read_only=True)
+    rel_total = serializers.DecimalField(source='total', read_only=True, max_digits=10, decimal_places=2)
+    
+    class Meta:
+        model = AccountingDocRelation
+        fields = ('id','rel_total','doc_number','type','total','doc_date',)
+
+
         
 class ChildsAccountingDocRelationSerializer(serializers.ModelSerializer):
     doc_number = serializers.CharField(source='child.doc_number', read_only=True)
@@ -26,6 +34,7 @@ class ChildsAccountingDocRelationSerializer(serializers.ModelSerializer):
     type = serializers.CharField(source='child.get_type_display', read_only=True)
     child_total = serializers.DecimalField(source='child.total_before_tax', read_only=True, max_digits=10, decimal_places=2)
     related_docs = serializers.SerializerMethodField()
+    morning_id = serializers.CharField(source='child.morning_id', read_only=True)
     
     def get_related_docs(self, obj):
         # AccountingDocRelationSerializer for parents and childs
@@ -39,7 +48,7 @@ class ChildsAccountingDocRelationSerializer(serializers.ModelSerializer):
         }
     class Meta:
         model = AccountingDocRelation
-        fields = ('id','child','doc_number','type','total','doc_date','child_total','related_docs',)
+        fields = ('id','child','doc_number','type','total','doc_date','child_total','related_docs','morning_id',)
 
 class RootPricePropProjectNameSerializer(serializers.ModelSerializer):
     name = serializers.CharField(source='root_project.name', read_only=True)
@@ -53,6 +62,20 @@ class AccountingDocSerializer(serializers.ModelSerializer):
     client__name = serializers.CharField(source='client.name', read_only=True)
     type__name = serializers.SerializerMethodField()
     project__names = serializers.SerializerMethodField()
+    related_docs = serializers.SerializerMethodField()
+    # childs = AccountingDocRelationSerializerFlatChilds(many=True, read_only=True)
+    # parents = AccountingDocRelationSerializerFlatParents(many=True, read_only=True)
+    
+    def get_related_docs(self, obj):
+        # AccountingDocRelationSerializer for parents and childs
+        parents = obj.parents.all()
+        childs = obj.childs.all()
+        parents_data = AccountingDocRelationSerializerFlatParents(parents, many=True).data
+        childs_data = AccountingDocRelationSerializerFlatChilds(childs, many=True).data
+        return {
+            'parents': parents_data,
+            'childs': childs_data,
+        }
     
     def get_project__names(self, obj):
         # ser = RootPricePropProjectNameSerializer(many=True, read_only=True, source='root_price_proposals', instance=obj)
@@ -74,7 +97,7 @@ class AccountingDocSerializer(serializers.ModelSerializer):
     class Meta:
         model = AccountingDoc
 
-        fields = ('id','client__name', 'project__names', 'doc_number','type','total','total_before_tax','morning_id','created_at','type__name',)
+        fields = ('id','client__name', 'project__names', 'doc_number','type','total','total_before_tax','morning_id','created_at','type__name','related_docs')
 
 
 
@@ -147,30 +170,3 @@ class ParentAccountingDocSerializer(serializers.ModelSerializer):
         model = AccountingDoc
         fields = ('id','doc_number','type','total','doc_date',)
 
-# class AccountingDocRelationSerializer(serializers.ModelSerializer):
-#     parent = ParentAccountingDocSerializer()
-#     child = ChildAccountingDocSerializer()
-#     class Meta:
-#         model = AccountingDocRelation
-#         fields = ('id','total','parent','child',)
-#     pass
-
-class AccountingDocRelationSerializerFlatChilds(serializers.ModelSerializer):
-    type = serializers.CharField(source='child.get_type_display', read_only=True)
-    doc_number = serializers.CharField(source='child.doc_number', read_only=True)
-    doc_date = serializers.CharField(source='child.created_at', read_only=True)
-    rel_total = serializers.DecimalField(source='total', read_only=True, max_digits=10, decimal_places=2)
-    
-    class Meta:
-        model = AccountingDocRelation
-        fields = ('id','rel_total','doc_number','type','total','doc_date',)
-
-class AccountingDocRelationSerializerFlatParents(serializers.ModelSerializer):
-    type = serializers.CharField(source='parent.get_type_display', read_only=True)
-    doc_number = serializers.CharField(source='parent.doc_number', read_only=True)
-    doc_date = serializers.CharField(source='parent.created_at', read_only=True)
-    rel_total = serializers.DecimalField(source='total', read_only=True, max_digits=10, decimal_places=2)
-    
-    class Meta:
-        model = AccountingDocRelation
-        fields = ('id','rel_total','doc_number','type','total','doc_date',)

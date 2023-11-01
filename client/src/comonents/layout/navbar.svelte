@@ -20,6 +20,14 @@
 			name: 'כספים',
 			url: '/accounting'
 		},
+		{
+			name: 'דוח תזרים חיובי',
+			url: '/positive-cash-flow'
+		},
+		{
+			name: 'פרויקטים גמורים',
+			url: '/done-projects'
+		}
 	];
 	// let istoken=false;
 	// onMount(async()=>{
@@ -42,7 +50,7 @@
 {#if $page.url.pathname !== '/login'}
 <nav class="navbar navbar-expand-lg navbar-light bg-light" >
 	<div class="container-fluid">
-		<a class="navbar-brand" href="#">PMS</a>
+		<a class="navbar-brand" href="/">PMS</a>
 		<button
 			class="navbar-toggler"
 			type="button"

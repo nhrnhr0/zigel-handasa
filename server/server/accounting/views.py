@@ -11,7 +11,7 @@ from core.pagination import StandardResultsSetPagination
 from core.filters import ClientMultiSelectFilter, TypeMultiSlectFilter
 from project.models import Project
 class AccountingDocListView(generics.ListAPIView):
-    queryset = AccountingDoc.objects.select_related('client').prefetch_related('root_price_proposals','root_price_proposals__root_project').filter(active=True)
+    queryset = AccountingDoc.objects.select_related('client').prefetch_related('root_price_proposals','root_price_proposals__root_project','parents','childs', 'parents__parent','parents__child','childs__parent', 'childs__child').filter(active=True)
     serializer_class = AccountingDocSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend,filters.SearchFilter,filters.OrderingFilter,CreatedAtBetweenDateFilterBackend,UpdatedAtBetweenDateFilterBackend,CreatedAtBetweenDateFilterBackend,ClientMultiSelectFilter,TypeMultiSlectFilter]
@@ -65,7 +65,8 @@ def accountingDocsAPIDescription(request):
             'doc_number': {
                 'lable': 'מספר מסמך',
                 'sortable': True,
-                'type': 'text',
+                'type': 'custom',
+                'custom_component': 'doc-number-tooltip',
             },
             'type__name': {
                 'lable': 'סוג',
@@ -114,6 +115,94 @@ def get_accounting_docs_morning_info(request):
     return JsonResponse({'docs':AccountingDocDetailSerializer(docs,many=True).data})
 
 @api_view(["POST"])
+def create_cancel_invoice_from_invoice(request):
+    from morning_api.api import MorningAPI
+    
+    invoice_morning_id = request.data.get('invoice_morning_id')
+# description
+# remarks
+# footer
+# emailContent
+# type
+# date 2016-04-12 YYYY-MM-DD
+# lang
+# currency
+# discount
+# rounding
+# # signed
+# attachment
+# client
+# income
+# linkedDocumentIds
+# linkType
+    description = request.data.get('description')
+    remarks = request.data.get('remarks')
+    footer = request.data.get('footer')
+    api_data = request.data.get('api_data')
+    emailContent = request.data.get('emailContent')
+    type = 330
+    date = request.data.get('date') # '2023/10/03'
+    date = MorningAPI().convert_django_date_to_morning_date(date, format='%Y/%m/%d')
+    lang = request.data.get('lang')
+    currency = request.data.get('currency')
+    discount = request.data.get('discount')
+    if discount:
+        if discount.get('type') == 'amount':
+            discount['type'] = 'sum'
+    rounding = request.data.get('rounding')
+    signed = request.data.get('signed')
+    attachment = request.data.get('attachment')
+    client = request.data.get('client')
+    income = request.data.get('income')
+    linkedDocumentIds = request.data.get('linkedDocumentIds')
+    linkType = 'cancel'
+    total = request.data.get('total')
+    # convert total to decimal
+    from decimal import Decimal
+    if isinstance(total, str):
+        total = Decimal(total)
+        
+    
+    data = {
+        'description':description,
+        'remarks':remarks,
+        'footer':footer,
+        'emailContent':emailContent,
+        'type':type,
+        'date':date,
+        'lang':lang,
+        'currency':currency,
+        'discount':discount,
+        'rounding':rounding,
+        'signed':signed,
+        'attachment':attachment,
+        'client':client,
+        'income':income,
+        'linkedDocumentIds':linkedDocumentIds,
+        'linkType':linkType,
+    }
+    response = MorningAPI().create_cancel_invoice_from_invoice(data)
+    if not response.ok:
+        return JsonResponse({'error':response.json()['errorMessage']})
+    
+    # create AccountingDocCancelInvoice object
+    from accounting.models import AccountingDocCancelInvoice,AccountingDocRelation
+    json_data = response.json()
+    morning_id = json_data['id']
+    doc_number = json_data['number']
+    invoice = AccountingDocInvoice.objects.get(morning_id=invoice_morning_id)
+    cancel_invoice = AccountingDocCancelInvoice.objects.create(client=invoice.client, type=330, morning_id=morning_id, doc_number=doc_number, api_data=json_data, total=total)
+    cancel_invoice.root_price_proposals.set(invoice.root_price_proposals.all())
+
+    # creating the relation between the invoice and the cancel invoice
+    AccountingDocRelation.objects.create(parent=invoice, child=cancel_invoice, total=cancel_invoice.total_before_tax)
+    
+    
+    return JsonResponse({'data':response.json()})
+    
+
+    
+@api_view(["POST"])
 def create_invoice_from_price_proposals(request):
     from morning_api.api import MorningAPI
     
@@ -128,9 +217,12 @@ def create_invoice_from_price_proposals(request):
     discount = request.data.get('discount')
     subtotal = request.data.get('subtotal')
     total = request.data.get('total')
+    tax = request.data.get('tax')
     # convert date to morning format:   "date": "2017-10-03",
-    date = MorningAPI().convert_django_date_to_morning_date(date)
-    due_date = MorningAPI().convert_django_date_to_morning_date(due_date)
+    # 2023/09/20
+    date = MorningAPI().convert_django_date_to_morning_date(date, format='%Y/%m/%d')
+    due_date = MorningAPI().convert_django_date_to_morning_date(due_date, format='%Y/%m/%d')
+    
     
 
     response = MorningAPI().create_invoice_from_price_proposals(clientDict, date, due_date, income, remarks, fotter, emailContent,description,discount)
@@ -143,6 +235,14 @@ def create_invoice_from_price_proposals(request):
     client = Client.objects.get(morning_id=clientDict['id'])
     
     invoice = AccountingDocInvoice.objects.create(client=client, type=305, morning_id=morning_id, doc_number=response.json()['number'], api_data=response.json())
+    invoice.api_data['income'] = income
+    invoice.api_data['tax'] = tax
+    invoice.api_data['subtotal'] = subtotal
+    invoice.api_data['discount'] = discount
+    invoice.api_data['description'] = description
+    invoice.api_data['remarks'] = remarks
+    invoice.api_data['fotter'] = fotter
+    
     # set rootPriceProposals
     root_price_proposals = []
     based_on = []

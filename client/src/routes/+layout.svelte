@@ -1,4 +1,5 @@
 <script>
+	import { NotificationDisplay } from '@beyonk/svelte-notifications';
 	import '../app.scss';
 	import { page } from '$app/stores';
 	import Navbar from '../comonents/layout/navbar.svelte';
@@ -9,6 +10,7 @@
 	// $page.data.nav_data
 </script>
 
+<NotificationDisplay timeout={7000} />
 <Navbar />
 <Breadcrumb />
 
@@ -27,5 +29,9 @@
 		left: 0;
 		background: rgba(0, 0, 0, 0.5);
 		z-index: 100;
+	}
+
+	:global(.toast:not(.showing):not(.show)) {
+		opacity: 1;
 	}
 </style>
