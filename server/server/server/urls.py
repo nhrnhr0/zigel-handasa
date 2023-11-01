@@ -29,6 +29,13 @@ from project.views import ProjectRetriveUpdateView,get_project_accounting_docs
 from rejectedProject.views import RejectedProjectListView,rejectedProjectsAPIDescription
 from accounting.views import AccountingDocListView,accountingDocsAPIDescription,get_accounting_docs_morning_info,create_invoice_from_price_proposals,create_cancel_invoice_from_invoice
 from accounting.views import get_related_accouting_docs
+# from file_upload.views import get_files
+# from file_upload.views import add_new_file
+# from file_upload.views import delete_file
+from login.views import login
+from file_upload.views import FilesUploadView
+from django.conf import settings
+from django.conf.urls.static import static
 from positiveCashFlow.views import PositiveCashFlowInvoiceView,PositiveCashFlowProjectView
 from done_projects.views import DoneProjectListView,doneProjectsAPIDescription
 urlpatterns = [
@@ -88,5 +95,17 @@ urlpatterns = [
     path('morning-webkook/document/', morningWebhookDocumentView),
     
     
-    path('test/', test)
+    path('test/', test),
+
+    # path('files_upload/new',add_new_file),
+    # path('files_upload/get/<int:project_id>',get_files),
+    # path('files_upload/delete',delete_file)
+    path('files_upload/<int:project_id>',FilesUploadView.as_view()),
+    path('login',login)
 ]
+
+if settings.DEBUG:
+    urlpatterns = urlpatterns + \
+        static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns = urlpatterns + \
+        static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

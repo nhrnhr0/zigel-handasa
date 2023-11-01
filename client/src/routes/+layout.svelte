@@ -6,6 +6,7 @@
 	import Breadcrumb from '../comonents/Breadcrumb.svelte';
 	import { Modals, closeModal } from 'svelte-modals';
 	import { fade } from 'svelte/transition';
+	
 	// $page.data.nav_data
 </script>
 

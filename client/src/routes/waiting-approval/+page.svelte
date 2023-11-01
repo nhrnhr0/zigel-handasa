@@ -3,6 +3,7 @@
 	import { API_AWAITING_PROJECTS_DESCRIPTION, API_AWAITING_PROJECTS } from '$lib/consts';
 	import { network_get_overdue_awaiting_projects } from '$lib/network.js';
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 	import TableDataPanel from '../../comonents/list-view/panels/TableDataPanel.svelte';
 	import TableFilterPanel from '../../comonents/list-view/panels/TableFilterPanel.svelte';
 	let description_url = API_AWAITING_PROJECTS_DESCRIPTION;
@@ -12,14 +13,21 @@
 	let overdue_awaiting_projects = undefined;
 	let allow_select = false;
 	onMount(async () => {
-		console.log('awaiting projects page');
-		// fetch description
-		fetchDescription();
-		fetchApiData();
-		// fetch overdue projects
-		const res = await network_get_overdue_awaiting_projects();
-		overdue_awaiting_projects = await res.json();
-	});
+		let token=localStorage.getItem("token")
+		console.log(token)
+		if(token&&token!=undefined){
+			console.log('awaiting projects page');
+			// fetch description
+			fetchDescription();
+			fetchApiData();
+			// fetch overdue projects
+			const res = await network_get_overdue_awaiting_projects();
+			overdue_awaiting_projects = await res.json();
+		}
+		else{
+			goto("/login")
+		}
+		});
 
 	const fetchDescription = async () => {
 		const res = await fetch(description_url);

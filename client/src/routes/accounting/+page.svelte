@@ -11,11 +11,17 @@
 	let description_data = undefined;
 
 	onMount(async () => {
-		console.log('accounting docs page');
-		debugger;
-		// fetch description
-		fetchDescription();
-		fetchApiData();
+		let token=localStorage.getItem("token")
+		if(!token){
+			goto("/login")
+		}
+		else{
+			console.log('accounting docs page');
+			debugger;
+			// fetch description
+			fetchDescription();
+			fetchApiData();
+		}
 	});
 
 	const fetchDescription = async () => {

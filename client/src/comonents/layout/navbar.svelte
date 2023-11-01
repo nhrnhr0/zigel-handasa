@@ -1,5 +1,7 @@
 <script>
 	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 	// export let data;
 	let info = [
 		{
@@ -27,9 +29,26 @@
 			url: '/done-projects'
 		}
 	];
-</script>
+	// let istoken=false;
+	// onMount(async()=>{
+	// 	const token=localStorage.getItem("token")
+	// 	if(token){
+	// 		istoken=true
+	// 	}
+	// })
+	function logOut(){
+		localStorage.removeItem("token")
+		goto("/login")
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	}
+	function handleKeyPress(event){
+		if(event.key==='Enter'){
+			logOut()
+		}
+	}
+</script>
+{#if $page.url.pathname !== '/login'}
+<nav class="navbar navbar-expand-lg navbar-light bg-light" >
 	<div class="container-fluid">
 		<a class="navbar-brand" href="/">PMS</a>
 		<button
@@ -49,12 +68,18 @@
 					<li class="nav-item" class:active={$page.url.pathname.includes(item.url)}>
 						<a class="nav-link" href={item.url}>{item.name}</a>
 					</li>
-				{/each}
+					{/each}
+					
 			</ul>
+			<div class=navbaar-nav>
+				<span on:click={logOut} class="nav-item" id="logout-span">
+					<span class="nav-link" style="cursor: pointer;" id="logout">התנתק</span>
+				</span>
+				</div>
 		</div>
 	</div>
 </nav>
-
+{/if}
 <style lang="scss">
 	.navbar {
 		.nav-item {
@@ -66,5 +91,22 @@
 				}
 			}
 		}
+	}
+	#logout{
+		min-height: 40px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding-left: 5px;
+		padding-right: 5px;
+	}
+	#logout:hover{
+		color: white;
+		background-color: #f44336;
+		
+	}
+	#navbarNav{
+		display: flex;
+		justify-content: space-between;
 	}
 </style>
