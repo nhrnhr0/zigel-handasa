@@ -5,7 +5,7 @@
 	import ModalApprove from '../modals/awaiting-approval/ModalApprove.svelte';
 	import ModalReject from '../modals/awaiting-approval/ModalReject.svelte';
 	import { openModal } from 'svelte-modals';
-	import UploadFiles from './upload-fiels/uploadFilesTab.svelte'
+	import UploadFilesTab from './upload-fiels/uploadFilesTab.svelte';
 	import Flatpickr from './shered/flatpicker/Flatpickr.svelte';
 	export let form_data;
 	export let on_update_function;
@@ -106,7 +106,7 @@
 					<div class="row">
 						<div class="col">
 							<!-- files -->
-							<UploadFiles project_id={form_data.id} />
+							<UploadFilesTab project_id={form_data.id} />
 						</div>
 					</div>
 				</div>

@@ -2,6 +2,8 @@
 	import { onMount } from 'svelte';
 	import { closeModal } from 'svelte-modals';
 	import { MultiSelect } from 'svelte-multiselect';
+	import { notifier } from '@beyonk/svelte-notifications';
+
 	import { fly } from 'svelte/transition';
 	import { fade } from 'svelte/transition';
 	import {
@@ -28,10 +30,12 @@
 	function submit() {
 		console.log('submit');
 		console.log('value: ', value);
+		let error = undefined;
 		network_reject_awaiting_project(awaiting_project_id, value).then((res) => {
 			console.log('res: ', res);
 			if (res.status == 200) {
-				alert('הפרויקט נדחה בהצלחה');
+				notifier.success('הפרויקט נדחה בהצלחה');
+			} else {
 			}
 		});
 

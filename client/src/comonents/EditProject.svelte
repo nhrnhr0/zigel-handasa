@@ -3,6 +3,7 @@
 	import PricePropInfo from './shered/Cards/PricePropInfo.svelte';
 	import CommentsCard from './shered/Cards/CommentsCard.svelte';
 	import { MultiSelect } from 'svelte-multiselect';
+	import UploadFilesTab from './upload-fiels/uploadFilesTab.svelte';
 	export let form_data;
 	export let original_data;
 	export let on_update_function;
@@ -107,6 +108,7 @@
 					<div class="row">
 						<div class="col">
 							<!-- files -->
+							<UploadFilesTab project_id={form_data.id} />
 						</div>
 					</div>
 				</div>

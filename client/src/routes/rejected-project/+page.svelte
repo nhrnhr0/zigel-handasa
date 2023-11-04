@@ -4,7 +4,7 @@
 	import ProjectsListView from '../../comonents/list-view/ProjectsListView.svelte';
 	import TableDataPanel from '../../comonents/list-view/panels/TableDataPanel.svelte';
 	import TableFilterPanel from '../../comonents/list-view/panels/TableFilterPanel.svelte';
-	import RejectedProjectEditButton from '../../comonents/rejectedProjects/RejectedProjectEditButton.svelte';
+	import RejectedProjectApproveButton from '../../comonents/rejectedProjects/RejectedProjectApproveButton.svelte';
 	let description_url = API_REJECTED_PROJECT_DESCRIPTION;
 	let api_url = API_REJECTED_PROJECT;
 	let description_data = undefined;
@@ -29,7 +29,7 @@
 		api_data = await res.json();
 	};
 	let custom_components = {
-		'rejected-project-edit-button': RejectedProjectEditButton
+		'rejected-project-approve-button': RejectedProjectApproveButton
 	};
 </script>
 

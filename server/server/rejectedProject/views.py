@@ -102,10 +102,10 @@ def rejectedProjectsAPIDescription(request):
                 'type': 'text',
             },
             'edit': {
-                'lable': 'עריכה',
+                'lable': 'אשר פרויקט',
                 'sortable': False,
                 'type': 'custom',
-                'custom_component': 'rejected-project-edit-button',
+                'custom_component': 'rejected-project-approve-button',
             },
             'created_at': {
                 'lable': 'נוצר בתאריך',
